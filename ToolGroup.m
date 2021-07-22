@@ -1194,18 +1194,18 @@ function cbSwingSelectedTabChanged(~,ed,toolgroup)
         if ~isempty(oldtab)
             oldtabgroup = oldtab.Parent;
             if oldtabgroup ~= newtabgroup
-                newtabgroup.UseDrawnow = false;
+                %newtabgroup.UseDrawnow = false;
                 oldtabgroup.SelectedTab = [];
-                newtabgroup.UseDrawnow = true;
+                %newtabgroup.UseDrawnow = true;
                 oldtabgroup.sendSelectedTabChangedEvent(oldtab,[]);        
             end
         end
     end
     %% update selected tab in the tab group of new tab only if not same
     if isempty(newtabgroup.SelectedTab) || (newtabgroup.SelectedTab ~= newtab)
-        newtabgroup.UseDrawnow = false;
+%        newtabgroup.UseDrawnow = false;
         newtabgroup.SelectedTab = newtab;
-        newtabgroup.UseDrawnow = true;
+        %newtabgroup.UseDrawnow = true;
         newtabgroup.sendSelectedTabChangedEvent(oldtab,newtab);
     end
     %% update selected tab name in ClientMap if there is an active client

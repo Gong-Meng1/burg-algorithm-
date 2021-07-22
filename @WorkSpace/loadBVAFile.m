@@ -40,13 +40,14 @@ if exist(matfilename, 'file') == 2
 else
     % no matfile: create the matfile
     EEG=Tools.pop_loadbv(WS.RawDirectory,name);
-    EEG=eeg_checkset(EEG);
+%    EEG=eeg_checkset(EEG);
     EEG.DataType = 'TIMEDOMAIN';
     EEG.DataFormat = 'CONTINUOUS';
 
     EEG.id = id;
     EEG.times = (((1:EEG.pnts)-1)/EEG.srate);
     EEG.File = matfilename;
+    EEG.lss = Tools.EEG2labeledSignalSet(EEG);
     save(matfilename, 'EEG', '-v7.3');
     this.EEG=EEG;
 end

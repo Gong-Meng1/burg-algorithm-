@@ -63,6 +63,7 @@ else
     EEG.id = id;
     EEG.times = stream.time_stamps - stream.time_stamps(1);
     EEG.File = matfilename;
+    EEG.lss = Tools.EEG2labeledSignalSet(this.EEG);
     save(matfilename, 'EEG', '-v7.3');
     this.EEG=EEG;
 end
