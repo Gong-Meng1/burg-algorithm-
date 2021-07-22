@@ -206,9 +206,17 @@ classdef Alakazam < handle
                     limits = ylim();
                     for i = 1:length(this.Workspace.EEG.urevent)
                         xpos1 = this.Workspace.EEG.urevent(i).latency / this.Workspace.EEG.srate;
-                        xpos2 = xpos1 + ((this.Workspace.EEG.urevent(i).duration / this.Workspace.EEG.srate)-1);
-                        area([xpos1 xpos1 xpos2 xpos2], [limits(1) limits(2) limits(2) limits(1)], ...
-                            'FaceColor', 'red', 'FaceAlpha', .1, 'EdgeAlpha', .2, 'EdgeColor', 'red', 'basevalue', limits(2));
+                        if (this.Workspace.EEG.urevent(i).duration > 1)
+                            xpos2 = xpos1 + ((this.Workspace.EEG.urevent(i).duration / this.Workspace.EEG.srate)-1);
+                            area([xpos1 xpos1 xpos2 xpos2], [limits(2) limits(1) limits(1) limits(2)], ...
+                                'FaceColor', 'blue', 'FaceAlpha', .1, 'EdgeAlpha', .2, 'EdgeColor', 'blue', 'basevalue', limits(2));
+                        else
+                            line([xpos1 xpos1], limits, 'Color', [0,0,1,.4], 'LineStyle', '-');
+                            text(xpos1, min(limits)+(.03*(abs(limits(2)-limits(1)))),  this.Workspace.EEG.urevent(i).type, ...
+                                'FontSize', 8, ...
+                                'HorizontalAlignment', 'center', ...
+                                'Color', [0,0,1,.1]);
+                        end
                     end
                     hold off
                     
