@@ -22,6 +22,7 @@ assignin('base', 'lss', lss);
 existingvars = evalin('base', 'who');
 
 signalLabeler;
+uiwait(msgbox({'Operation Completed'; 'Close this box when finished labeling'}));
 
 allvars =  evalin('base', 'who');
 
