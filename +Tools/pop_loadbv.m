@@ -142,7 +142,7 @@ if isfield(hdr, 'coordinates')
     onenon0channel = 0;
     for chan = 1:length(chans)
         if ~isempty(hdr.coordinates{chans(chan)})
-            if ismatlab,
+            if Tools.ismatlab,
                 [EEG.chanlocs(chan).sph_radius, theta, phi] = strread(hdr.coordinates{chans(chan)}, '%f%f%f', 'delimiter', ',');
             else
                 str  = hdr.coordinates{chans(chan)};

@@ -29,7 +29,7 @@ function lss = EEG2labeledSignalSet(EEG)
     if ~isfield(Events, 'code')
         return
     end
-    Labels = unique({Events.code});
+    Labels = unique(cellstr({Events.code}));
      
     for label = Labels
         labelVar = matlab.lang.makeValidName(label);
@@ -38,7 +38,7 @@ function lss = EEG2labeledSignalSet(EEG)
         end
 
         addLabelDefinitions(lss,  CreateLabelDefinition(labelVar));
-        addLabels(lss, labelVar, Events(strcmp({Events.code}, label)));
+        addLabels(lss, labelVar, Events(strcmp(cellstr({Events.code}), label)));
     end
 end
 function [loc, vals, endloc] = addLabels(lss,labelVar, eventList)

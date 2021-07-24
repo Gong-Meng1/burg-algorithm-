@@ -34,7 +34,9 @@ if exist(matfilename, 'file') == 2
     end
 else
     % no matfile: create the matfile
-    stream = load_xdf(xdffilename);
+    addpath(fullfile(fileparts(mfilename('fullpath')), '../+Tools'));
+
+    stream = Tools.load_xdf(xdffilename);
     stream  = stream{1};
     EEG = eeg_emptyset;
     EEG.data = stream.time_series;
