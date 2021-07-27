@@ -34,11 +34,11 @@ if exist(matfilename, 'file') == 2
     end
 else
     % no matfile: create the matfile
-    addpath(fullfile(fileparts(mfilename('fullpath')), '../+Tools'));
+    % addpath(fullfile(fileparts(mfilename('fullpath'))));
 
     stream = Tools.load_xdf(xdffilename);
     stream  = stream{1};
-    EEG = eeg_emptyset;
+    EEG = Tools.eeg_emptyset;
     EEG.data = stream.time_series;
     [EEG.nbchan,EEG.pnts,EEG.trials] = size(EEG.data);
     [EEG.filepath,fname,fext] = fileparts(xdffilename); EEG.filename = [fname fext];

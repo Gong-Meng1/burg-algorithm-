@@ -20,6 +20,7 @@ classdef Alakazam < handle
     methods
         
         function this = Alakazam(varargin)
+            warning('off', 'MATLAB:ui:javacomponent:FunctionToBeRemoved');
             %[flist,plist] = matlab.codetools.requiredFilesAndProducts('Alakazam.m'); [flist'; {plist.Name}']
             
             % Al
