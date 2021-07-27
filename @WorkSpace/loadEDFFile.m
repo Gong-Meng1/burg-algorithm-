@@ -56,8 +56,10 @@ else
     this.EEG=EEG;
 end
 
-% add the (semi)rootnode:
+%% Adds the loaded 'EEG' to the tree.
 tn = uiextras.jTree.TreeNode('Name',id, 'UserData', matfilename, 'Parent', this.Tree.Root);
 setIcon(tn,this.RawFileIcon);
 
+%% Now recursively check for children of this file, and read them if they are there there.
+this.treeTraverse(id, WS.CacheDirectory, tn);
 end
