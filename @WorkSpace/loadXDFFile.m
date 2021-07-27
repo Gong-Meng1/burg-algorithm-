@@ -59,7 +59,7 @@ else
     EEG.chanlocs(1).labels = 'ECG';
     EEG.chanlocs = EEG.chanlocs';
 
-    EEG=eeg_checkset(EEG);
+    EEG=Tools.eeg_checkset(EEG);
     EEG.DataType = 'TIMEDOMAIN';
     EEG.DataFormat = 'CONTINUOUS';
     EEG.id = id;
