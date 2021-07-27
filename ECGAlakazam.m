@@ -1,3 +1,0 @@
-function ECGAlakazam()
-    Alakazam
-end
