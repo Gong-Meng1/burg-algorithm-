@@ -99,7 +99,7 @@ classdef Alakazam < handle
                 end
                 
                 Key = [id datestr(datetime('now'), 'yymmddHHMMSS')];
-                a.EEG.File = strcat(parent.dir, '\', Key, '.mat');
+                a.EEG.File = strcat(parent.dir, '\',parent.name, '\' , Key, '.mat');
                 a.EEG.id =  [char(CurrentNode) ' - ' id];
                 
                 NewNode=uiextras.jTree.TreeNode('Name',a.EEG.id,'Parent',this.Workspace.Tree.SelectedNodes, 'UserData',a.EEG.File);

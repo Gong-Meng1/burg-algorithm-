@@ -5,11 +5,7 @@ function loadEDFFile(this, WS, name)
 %
 %
 %%
-x = fileparts( which('sopen') );
-rmpath(x);
-addpath(x,'-begin');
-
-import matlab.ui.internal.toolstrip.*
+%import matlab.ui.internal.toolstrip.*
 [~,id,~] = fileparts(name);
 
 matfilename = strcat(WS.CacheDirectory, id, '.mat');
