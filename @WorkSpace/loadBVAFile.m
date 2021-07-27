@@ -1,9 +1,10 @@
 function loadBVAFile(this, WS, name)
 %%
-%
-%
-%
-%
+% Wrapper for the eeglab function reading Brainvision files.
+% Reads only if no .mat file allready exists, and reads the .mat file
+% if it does. 
+% Looks for a subdir with the same name for 'tree' info on previously 
+% performed Transformations. Adds these too.
 %%
 
 import matlab.ui.internal.toolstrip.*
@@ -25,7 +26,6 @@ if exist(matfilename, 'file') == 2
         EEG.times = ((1:EEG.pnts)-1)/EEG.srate;
         EEG.DataType = 'TIMEDOMAIN';
         EEG.DataFormat = 'CONTINUOUS';
-
         EEG.id = id;
         EEG.File = matfilename;
         save(matfilename, 'EEG');
@@ -52,7 +52,10 @@ else
     this.EEG=EEG;
 end
 
+%% Adds the loaded 'EEG' to the tree.
 tn = uiextras.jTree.TreeNode('Name',id, 'UserData', matfilename, 'Parent', this.Tree.Root);
 setIcon(tn,this.RawFileIcon);
 
+%% Now recursively check for children of this file, and read them if they are there there.
+this.treeTraverse(id, WS.CacheDirectory, tn);
 end

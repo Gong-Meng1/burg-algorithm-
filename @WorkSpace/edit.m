@@ -9,7 +9,7 @@ function edit(this,~,~)
         { 'style' 'text' 'string' 'Exports Folder:'} ...
         { 'style' 'edit' 'string' this.ExportsDirectory} ...
     };
-    result = Tools.inputgui(uigeom, uilist, 'pophelp(''pop_loadbv'')', 'Load a Workspace Definition');
+    result = Tools.inputgui(uigeom, uilist, 'pophelp(''edit Workspace'')', 'Load a Workspace Definition');
     if isempty(result), return, end
     this.RawDirectory = result{1};
     if  this.RawDirectory(end) ~= '\'

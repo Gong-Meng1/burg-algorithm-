@@ -10,10 +10,10 @@ if (nargin < 1)
     ME = MException('Alakazam:Export','Problem in Export: No Data Supplied');
     throw(ME);
 end
-options = 15;
+options = '15';
 EEG=input;
 lss = Tools.EEG2labeledSignalSet(input);
-assignin('base', 'lss', lss);
+assignin('base',genvarname(EEG.id), lss);
 existingvars = evalin('base', 'who');
 
 signalLabeler;
@@ -30,4 +30,4 @@ end
 
 EEG.lss = evalin('base', newvar);
 EEG=Tools.labeledSignalSet2EEG(EEG);
-
+pause(5);

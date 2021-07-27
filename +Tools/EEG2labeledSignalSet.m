@@ -44,7 +44,7 @@ end
 function [loc, vals, endloc] = addLabels(lss,labelVar, eventList)
     if length(eventList) > 1
         loc = lss.Source{1}.Time([eventList.latency]);
-        endloc = lss.Source{1}.Time([eventList.duration]+[eventList.latency]);
+        endloc = lss.Source{1}.Time([eventList.duration]+0+[eventList.latency]);
         vals = {eventList.type};
     else
         loc = lss.Source{1}.Time(eventList.latency);

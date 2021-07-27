@@ -71,7 +71,7 @@ classdef Alakazam < handle
         
         function ActionOnTransformation(this, ~, ~, userdata)
             % this function is the callback for all transformations.
-            try
+            %try
                 callfnction = char(userdata);
                 lastdotpos = find(callfnction == '.', 1, 'last');
                 id = callfnction(1:lastdotpos-1);
@@ -88,8 +88,17 @@ classdef Alakazam < handle
                 CurrentNode = this.Workspace.Tree.SelectedNodes.Name;
                 % Build new FileID (Name) based on the name of the current
                 % node, the used transformationID and a timestamp.
+                % does the transdir for this file exist?
+                [parent.dir, parent.name] = fileparts(a.EEG.File);
+                
+                cDir = fullfile(parent.dir,parent.name);
+                if ~exist(cDir, 'dir')
+                    cDir = fullfile(parent.dir,parent.name);
+                    mkdir(cDir);
+                end
+                
                 Key = [id datestr(datetime('now'), 'yymmddHHMMSS')];
-                a.EEG.File = strcat(this.Workspace.CacheDirectory, char(CurrentNode), Key, '.mat');
+                a.EEG.File = strcat(parent.dir, '\', Key, '.mat');
                 a.EEG.id =  [char(CurrentNode) ' - ' id];
                 
                 NewNode=uiextras.jTree.TreeNode('Name',a.EEG.id,'Parent',this.Workspace.Tree.SelectedNodes, 'UserData',a.EEG.File);
@@ -101,17 +110,16 @@ classdef Alakazam < handle
                 NewNode.Parent.expand();
                 this.Workspace.Tree.SelectedNodes = NewNode;
                    
-                a.EEG.data = a.EEG.data;
                 EEG=a.EEG;
                 save(a.EEG.File, 'EEG');
                 this.Workspace.EEG=EEG;
-                pause(5);
+                
                 plotCurrent(this);
-            catch ME
+            %catch ME
                 %warndlg(ME.message, 'Error in transformation');
-                throw (ME)
+                %throw (ME)
                 %;
-            end
+            %end
         end
         
         function plotCurrent(this)
@@ -157,16 +165,7 @@ classdef Alakazam < handle
                 %% NOT EPOPCHED: CONTINUOUS
                 if strcmp(this.Workspace.EEG.DataType, 'TIMEDOMAIN')
                     if (this.Workspace.EEG.nbchan > 1)
-                        if (isfield(this.Workspace.EEG, 'ibis'))
-%                             Tools.plotECG(this.Workspace.EEG.times, this.Workspace.EEG,...
-%                                 'ShowInformationList','none',...
-%                                 'ShowAxisTicks','on',...
-%                                 'mmPerSec', 25,...
-%                                 'YLimMode', 'fixed',...
-%                                 'AutoStackSignals', {this.Workspace.EEG.chanlocs.labels},...
-%                                 'ShowInformationList','none',...
-%                                 'Parent',  this.Figures(end));
-                            
+                        if (isfield(this.Workspace.EEG, 'ibis'))                            
                             Tools.addECGAnn(this);
                         else
                             % Multichannel plot, no ibis
@@ -181,14 +180,6 @@ classdef Alakazam < handle
                      else
                         % Singlechannel Plot, IBIS calculated:
                         if (isfield(this.Workspace.EEG, 'ibis'))
-%                             Tools.plotECG(this.Workspace.EEG.times, this.Workspace.EEG, 'b-',...
-%                                 'ShowInformationList','none',...
-%                                 'ShowAxisTicks','on',...
-%                                 'mmPerSec', 25,...
-%                                 'YLimMode', 'fixed',...
-%                                 'ShowInformationList','none',...
-%                                 'Parent',  this.Figures(end));
-%                             
                             Tools.addECGAnn(this);
                         else
                             Tools.plotECG(this.Workspace.EEG.times, this.Workspace.EEG, 'b-',...
@@ -207,22 +198,19 @@ classdef Alakazam < handle
                         xpos1 = this.Workspace.EEG.urevent(i).latency / this.Workspace.EEG.srate;
                         if (this.Workspace.EEG.urevent(i).duration > 1)
                             xpos2 = xpos1 + ((this.Workspace.EEG.urevent(i).duration / this.Workspace.EEG.srate)-1);
-%                             area([xpos1 xpos1 xpos2 xpos2], [limits(2) limits(1) limits(1) limits(2)], ...
-%                                 'FaceColor', 'blue', 'FaceAlpha', .1, 'EdgeAlpha', .2, 'EdgeColor', 'blue', 'basevalue', limits(2));
-                            
                             patch('Faces',[1 2 3 4], 'Vertices', [xpos1 limits(1)-2*diff(limits); xpos2 limits(1)-2*diff(limits); xpos2 limits(2); xpos1 limits(2)], ...
                                 'FaceVertexAlphaData',[.6 .6 .5 .5]',...
                                 'FaceColor', [.1 .1 .4], 'FaceAlpha', 'interp', 'EdgeAlpha', .2, 'EdgeColor', 'blue');
                             text(xpos1, min(limits)+(.01*(abs(limits(2)-limits(1)))),  this.Workspace.EEG.urevent(i).type, ...
                                 'FontSize', 8, ...
                                 'HorizontalAlignment', 'left', ...
-                                'Color', [1,1,1,.1]);
+                                'Color', [.6,1,1,.1]);
                         else
                             line([xpos1 xpos1], limits, 'Color', [0,0,1,.4], 'LineStyle', '-');
                             text(xpos1, min(limits)+(.01*(abs(limits(2)-limits(1)))),  this.Workspace.EEG.urevent(i).type, ...
                                 'FontSize', 8, ...
                                 'HorizontalAlignment', 'center', ...
-                                'Color', [0,0,1,.1]);
+                                'Color', [.1,.1,1,.1]);
                         end
                     end
                     hold off
@@ -281,7 +269,7 @@ classdef Alakazam < handle
             
             CurrentNode = x.EEG.id;
             Key = [id datestr(datetime('now'), 'yymmddHHMMSS')];
-            a.EEG.File = strcat(this.Workspace.CacheDirectory, char(CurrentNode), Key, '.mat');
+            a.EEG.File = strcat(this.Workspace.CacheDirectory, char(CurrentNode),'\', Key, '.mat');
             a.EEG.id =  [char(CurrentNode) ' - ' id];
             a.EEG.Call = Old.EEG.Call;
             a.EEG.params = Old.EEG.params;
@@ -296,6 +284,14 @@ classdef Alakazam < handle
             this.Workspace.Tree.SelectedNodes = NewNode;
             
             EEG=a.EEG;
+            [parent.dir, parent.name] = fileparts(a.EEG.File);
+            
+            cDir = fullfile(parent.dir,parent.name);
+            if ~exist(cDir, 'dir')
+                cDir = fullfile(parent.dir,parent.name);
+                mkdir(cDir);
+            end
+            
             save(a.EEG.File, 'EEG');
             this.Workspace.EEG=EEG;
         end
