@@ -1,15 +1,17 @@
 function [EEG, options] = IBI_Export(input,opts)
-%% Example Transformation simply calling EEGLAB function
-% Calls the SignalLabeler App from the signal processing toolkit
-% First copies the current ECG file to a labeledSignalSet to be used by the
-% SignalLabeler. When finished, copies the areas to the event section of
-% the EEG struct.
+%% Example Transformation 
+% 
 
 %% Check for the EEG dataset input:
 if (nargin < 1)
-    ME = MException('Alakazam:Export','Problem in Export: No Data Supplied');
+    ME = MException('Alakazam:IBIExport','Problem in IBIExport: No Data Supplied');
     throw(ME);
 end
+if ~isfield(input, 'ibis')
+    ME = MException('Alakazam:IBIExport','Problem in IBIExport: No IBIS availeable (yet)');
+    throw(ME);
+end
+    
 [p,n,~] = fileparts(input.File);
 if exist('opts', 'var')
     options = opts;

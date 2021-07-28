@@ -1,5 +1,5 @@
 function [EEG, options] = Labeler(input,opts)
-%% Example Transformation simply calling EEGLAB function
+%% Example Transformation
 % Calls the SignalLabeler App from the signal processing toolkit
 % First copies the current ECG file to a labeledSignalSet to be used by the
 % SignalLabeler. When finished, copies the areas to the event section of
