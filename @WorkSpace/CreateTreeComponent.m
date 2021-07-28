@@ -14,7 +14,9 @@ function CreateTreeComponent(this)
 
     this.javaObjects = this.Tree.getJavaObjects();
     this.Panel.add(this.javaObjects.jScrollPane);
-
+    
+    %% For no obvious reason I put the used icons within "this" class, the Workspace...
+    
     this.RawFileIcon = fullfile(pwd,'Icons','bookicon.gif');
     this.TimeSeriesIcon = fullfile(pwd,'Icons','pagesicon.gif');
     this.FrequenciesIcon = fullfile(pwd,'Icons','frequencyIcon.gif');

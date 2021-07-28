@@ -5,11 +5,6 @@ function loadXDFFile(this, WS, name)
 %
 %
 %%
-x = fileparts( which('sopen') );
-rmpath(x);
-addpath(x,'-begin');
-
-import matlab.ui.internal.toolstrip.*
 [~,id,~] = fileparts(name);
 
 % add the (semi)rootnode:
@@ -27,9 +22,9 @@ if exist(matfilename, 'file') == 2
         a=load(strcat(WS.CacheDirectory, id, '.mat'), 'EEG');
         this.EEG = a.EEG;
         this.EEG.id = id;
-        EEG.chanlocs(1).theta = 0;
-        EEG.chanlocs(1).labels = 'ECG';
-        EEG.chanlocs = EEG.chanlocs';
+        %EEG.chanlocs(1).theta = 0;
+        %EEG.chanlocs(1).labels = 'ECG';
+        %EEG.chanlocs = EEG.chanlocs';
         this.EEG.File = matfilename;
     end
 else

@@ -543,7 +543,11 @@ if strcmpi(parser.Results.ShowAxisTicks,'on')
     hs.ax2.XLabel.String = parser.Results.SecondXAxisLabel;
     hs.ax.XMinorGrid = 'on';
     if isempty(parser.Results.AutoStackSignals)
-        hs.ax.YLabel.String = 'Voltage in mV';
+        if (isfield(varargin{2}, 'YLabel') && isstr(varargin{2}.YLabel))
+            hs.ax.YLabel.String = varargin{2}.YLabel;
+        else
+            hs.ax.YLabel.String = 'Voltage in mV';
+        end
     else
         hs.ax.YLabel.String = 'Channel';
     end        

@@ -195,6 +195,7 @@ classdef Alakazam < handle
                     %% Plot the UREvents
                     hold on
                     limits = ylim();
+                    if (isfield(this.Workspace.EEG, 'urevent'))
                     for i = 1:length(this.Workspace.EEG.urevent)
                         xpos1 = this.Workspace.EEG.urevent(i).latency / this.Workspace.EEG.srate;
                         if (this.Workspace.EEG.urevent(i).duration > 1)
@@ -213,6 +214,7 @@ classdef Alakazam < handle
                                 'HorizontalAlignment', 'center', ...
                                 'Color', [.1,.1,1,.1]);
                         end
+                    end
                     end
                     hold off
                     

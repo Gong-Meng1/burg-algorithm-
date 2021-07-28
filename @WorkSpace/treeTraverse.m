@@ -24,20 +24,22 @@ end
 %   Yes: what files are in there, 
 for ib = 1:length(branches)
     b = branches(ib);
-%        1) add them to the tree, **and**
-    a = load(fullfile(b.folder,b.name), 'EEG');
-    
-    NewNode = uiextras.jTree.TreeNode('Name',a.EEG.id,'Parent', ...
-        currentParentNode, 'UserData',a.EEG.File);
-    if strcmpi(a.EEG.DataType, 'TIMEDOMAIN')
-        setIcon(NewNode,this.TimeSeriesIcon);
-    elseif strcmpi(a.EEG.DataType, 'FREQUENCYDOMAIN')
-        setIcon(NewNode,this.FrequenciesIcon);
+    if strcmpi(b.name(end-2:end), 'mat')
+        %        1) add them to the tree, **and**
+        a = load(fullfile(b.folder,b.name), 'EEG');
+        
+        NewNode = uiextras.jTree.TreeNode('Name',a.EEG.id,'Parent', ...
+            currentParentNode, 'UserData',a.EEG.File);
+        if strcmpi(a.EEG.DataType, 'TIMEDOMAIN')
+            setIcon(NewNode,this.TimeSeriesIcon);
+        elseif strcmpi(a.EEG.DataType, 'FREQUENCYDOMAIN')
+            setIcon(NewNode,this.FrequenciesIcon);
+        end
+        
+        %        2) traverse into (each of) them.
+        [~,n,~] = fileparts(fullfile(b.folder,b.name));
+        treeTraverse(this, n, branchDir, NewNode);
     end
-
-%        2) traverse into (each of) them.
-    [~,n,~] = fileparts(fullfile(b.folder,b.name));    
-    treeTraverse(this, n, branchDir, NewNode);
 end
 %                 NewNode=uiextras.jTree.TreeNode('Name',a.EEG.id,'Parent',this.Workspace.Tree.SelectedNodes, 'UserData',a.EEG.File);
 %                 if strcmpi(a.EEG.DataType, 'TIMEDOMAIN')
