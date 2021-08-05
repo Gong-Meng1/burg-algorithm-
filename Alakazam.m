@@ -21,14 +21,9 @@ classdef Alakazam < handle
         
         function this = Alakazam(varargin)
             warning('off', 'MATLAB:ui:javacomponent:FunctionToBeRemoved');
-            %[flist,plist] = matlab.codetools.requiredFilesAndProducts('Alakazam.m'); [flist'; {plist.Name}']
-            
-            % Al
             addpath(genpath('Transformations'), 'mlapptools', genpath('../Alakazam/functions'));
-            %mlapptools.toggleWarnings('off');
             import javax.swing.UIManager;
             this.originalLnF = 'com.sun.java.swing.plaf.windows.WindowsLookAndFeel' ;
-            %javax.swing.UIManager.getLookAndFeel;
             newLnF = 'com.jgoodies.looks.plastic.Plastic3DLookAndFeel';   %string
             javax.swing.UIManager.setLookAndFeel(newLnF);
             
@@ -208,11 +203,11 @@ classdef Alakazam < handle
                                 'HorizontalAlignment', 'left', ...
                                 'Color', [.6,1,1,.1]);
                         else
-                            line([xpos1 xpos1], limits, 'Color', [0,0,1,.4], 'LineStyle', '-');
-                            text(xpos1, min(limits)+(.01*(abs(limits(2)-limits(1)))),  this.Workspace.EEG.urevent(i).type, ...
-                                'FontSize', 8, ...
-                                'HorizontalAlignment', 'center', ...
-                                'Color', [.1,.1,1,.1]);
+                            cursor(gca,xpos1,[],[], 'Color', [0,0,.3,.4], ...
+                                'Label', this.Workspace.EEG.urevent(i).type, ...
+                                'LabelVerticalAlignment', 'bottom', ...
+                                'LabelHorizontalAlignment', 'center',...
+                                'LineStyle', ':');
                         end
                     end
                     end
@@ -230,7 +225,7 @@ classdef Alakazam < handle
             end
         end
         
-        function TreeDropNode(this, Tree, args)
+        function TreeDropNode(this, ~, args)
             % Called when a Treenode is Dropped on another Treenode.
             % I prefer a switch of "copy" and "move" here.
             if ~isempty(args.Source.Parent.Parent) % if not a rootnode
@@ -303,7 +298,11 @@ classdef Alakazam < handle
             if (args.Button == 1) % left Button
                 %if (args.Clicks == 2) % double click left button
                     % One way or the other: load and display the data.
-                    id = Tree.SelectedNodes.Name;
+                    try
+                        id = Tree.SelectedNodes.Name;
+                    catch e
+                        return
+                    end
                     matfilename = Tree.SelectedNodes.UserData;
                     if exist(matfilename, 'file') == 2
                         % if the file already exists:

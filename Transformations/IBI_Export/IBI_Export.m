@@ -29,7 +29,7 @@ csvwrite(fullfile(p,options.fname), input.ibis')
 
 EEG=input;
 if (strcmp(options.cdif, 'yes'))
-    EEG.data = double([input.ibis' [0 diff(input.ibis)]']);
+    EEG.data = double([input.ibis' [NaN diff(input.ibis)]']);
     EEG.nbchan = 2;
 else
     EEG.data = double(input.ibis');
