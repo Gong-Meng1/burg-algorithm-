@@ -677,6 +677,9 @@ hs.panel.Visible = 'on';
             % figure overplotted by normal plot()
             return
         end
+        
+        set(gcf,'Pointer','watch');
+        
         scaleValue = get(hs.scale,'Value');
         scrollValue = get(hs.scroll,'Value');
         zoomValue   = get(hs.zoom,'Value');
@@ -830,6 +833,8 @@ hs.panel.Visible = 'on';
             arg.hs = hs;
             feval(parser.Results.ScrollCallback,arg);
         end
+        set(gcf,'Pointer','arrow');
+
     end
 
 

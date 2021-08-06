@@ -68,6 +68,9 @@ classdef Alakazam < handle
         function ActionOnTransformation(this, ~, ~, userdata)
             % this function is the callback for all transformations.
             %try
+                f = findobj('Type', 'Figure','Tag', this.Workspace.EEG.File);
+                set(f,'Pointer','watch');
+            
                 callfnction = char(userdata);
                 lastdotpos = find(callfnction == '.', 1, 'last');
                 id = callfnction(1:lastdotpos-1);
@@ -111,6 +114,8 @@ classdef Alakazam < handle
                 this.Workspace.EEG=EEG;
                 
                 plotCurrent(this);
+                set(f,'Pointer','arrow');
+
             %catch ME
                 %warndlg(ME.message, 'Error in transformation');
                 %throw (ME)
