@@ -1,38 +1,32 @@
-classdef cursor
-    % cursor: an moveable verical line (event)
+classdef bcursor
+    % cursor: an moveable patch (event with duration)
     properties
         vline
         motionCallback
         upCallback
-        pfigure
+        Axes
     end
     
     methods
-        function obj = cursor( hAxes, pos, mcallback, ucallback, varargin)
+        function obj = bcursor( hAxes, pos, dur, mcallback, ucallback, varargin)
             % cursor Construct an instance of this class
             
             obj.motionCallback  = mcallback;    
             obj.upCallback      = ucallback;
-            obj.pfigure = gcf;
-            if isempty(mcallback) && isempty(ucallback)
-                obj.vline = xline(pos,  ...
-                    'Parent', hAxes, ...
-                    varargin{:} );
-            else
-                obj.vline = xline(pos,  ...
-                    'ButtonDownFcn', @obj.buttondn, ...
-                    'Parent', hAxes, ...
-                    varargin{:} );
-            end
+            obj.Axes            = hAxes;
+            obj.vline = xline(pos,  ...
+                'ButtonDownFcn', @obj.buttondn, ...
+                'Parent', hAxes, ...
+                varargin{:} );
         end
         
         function buttondn(obj, h, events)
-            ud = get(obj.pfigure,'UserData');            
+            ud = get(gcf,'UserData');            
             
             ud.vline = h;
             ud.downEvents = events;
             
-            set(obj.pfigure,'UserData', ud, ...
+            set(gcf,'UserData', ud, ...
                 'WindowButtonMotionFcn',@obj.buttonmotion,...
                 'WindowButtonUpFcn',@obj.buttonup);         
         end
@@ -51,7 +45,7 @@ classdef cursor
             ud = get(h,'UserData');
             np = get (gca, 'CurrentPoint');
             
-            set(ud.vline,'Value',np(1));
+            set(ud.hline,'Value',np(1));
             
             if ~isempty(obj.motionCallback)
                 feval(obj.motionCallback, ud.vline, events)

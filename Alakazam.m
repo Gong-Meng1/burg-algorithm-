@@ -14,20 +14,15 @@ classdef Alakazam < handle
         Figures
         FDropHandler
         Workspace
-        originalLnF
     end
     
     methods
         
         function this = Alakazam(varargin)
             warning('off', 'MATLAB:ui:javacomponent:FunctionToBeRemoved');
-            addpath(genpath('Transformations'), 'mlapptools', genpath('../Alakazam/functions'));
-            import javax.swing.UIManager;
-            this.originalLnF = 'com.sun.java.swing.plaf.windows.WindowsLookAndFeel' ;
-            newLnF = 'com.jgoodies.looks.plastic.Plastic3DLookAndFeel';   %string
-            javax.swing.UIManager.setLookAndFeel(newLnF);
+            addpath(genpath('Transformations'), 'mlapptools');
             
-            % create tool group
+           % create tool group
             this.ToolGroup = ToolGroup('Alakazam','AlakazamApp');
             
             addlistener(this.ToolGroup, 'GroupAction',@(src, event) closeCallback(this, event));
@@ -57,8 +52,7 @@ classdef Alakazam < handle
             if ~isempty(this.ToolGroup) && isvalid(this.ToolGroup)
                 delete(this.ToolGroup);
             end
-            javax.swing.UIManager.setLookAndFeel(this.originalLnF);
-            delete(this.Figures);
+           delete(this.Figures);
         end
         
         function dropTargetCallback(src,data)

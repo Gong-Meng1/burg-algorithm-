@@ -1,5 +1,5 @@
 # Alakazam
-Modular EEG analysis software package in MATLAB
+Modular ECG analysis software package in MATLAB
 
 ![Screenshot](/ScreenShot.jpg)
 
