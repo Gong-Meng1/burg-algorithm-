@@ -1,11 +1,11 @@
 function CreateTreeComponent(this)
 % using a very slightly modified tree component, hence the copy in +uiextra
 % the panel is the databrowsert
-    Root = figure('Visible', 'off');
+
     this.Panel = javaObjectEDT('javax.swing.JPanel',javaObjectEDT('java.awt.BorderLayout'));    
     this.Tree = uiextras.jTree.Tree('DndEnabled', true, ...
         'Editable', true, ...
-        'Parent', Root, ...
+        'Parent', figure('Visible', 'off'), ...
         'RootVisible', 'off', ...
         'SelectionChangeFcn', @(h,e) this.Parent.SelectionChanged(h,e), ...
         'MouseClickedCallback', @(h,e) this.Parent.MouseClicked(h,e), ...
@@ -13,14 +13,14 @@ function CreateTreeComponent(this)
     );
     
     %%
-    this.Dummy = javaObjectEDT('javax.swing.JButton', 'Button 1');
-
+    this.Dummy = uicontrol('Style','popupmenu',... 
+        'String',{'Peaks','Membrane','Sinc'},...
+        'Position',[335,20,100,25]);   
     %%
     
     this.javaObjects = this.Tree.getJavaObjects();
-    this.Panel.add(this.Dummy, 'South')
-    this.Panel.add(this.javaObjects.jScrollPane, 'North');
-    
+    this.Panel.add(this.javaObjects.jScrollPane);
+    this.
     %% For no obvious reason I put the used icons within "this" class, the Workspace...
     
     this.RawFileIcon = fullfile(pwd,'Icons','bookicon.gif');

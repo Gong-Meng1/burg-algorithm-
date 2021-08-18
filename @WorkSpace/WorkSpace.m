@@ -11,6 +11,7 @@ classdef WorkSpace < handle
         ExportsDirectory
         Panel
         Tree
+        Dummy
         RawFileIcon
         TimeSeriesIcon
         FrequenciesIcon
