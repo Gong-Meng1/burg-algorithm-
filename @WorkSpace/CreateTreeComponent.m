@@ -15,24 +15,10 @@ function CreateTreeComponent(this)
     );
     
     %%
-    this.Dummy = javaObjectEDT('javax.swing.JPanel',javaObjectEDT('java.awt.GridLayout',12,12));
-    for i = 1:(12*12)
-        this.Dummy.add(javaObjectEDT('javax.swing.JButton', 'Center'));
-    end 
-%     
-%     fighandle = figure('Visible', 'off');
-%     this.Dummy = uicontrol(...
-%         'style'   , 'pushbutton',...
-%         'parent'  , fighandle,...
-%         'string'  , 'OK',...
-%         'position', [1,1,100,100]);
-
-    %%
-    
+    this.ToolBox = javaObjectEDT('javax.swing.JPanel',javaObjectEDT('java.awt.GridLayout',3,2,0,10));    
     this.javaObjects = this.Tree.getJavaObjects();
-    
-    this.Panel.add(this.Dummy, 'South')
     this.Panel.add(this.javaObjects.jScrollPane, 'Center');
+    this.DefaultToolBox();
     
     %% For no obvious reason I put the used icons within "this" class, the Workspace...
     
