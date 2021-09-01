@@ -352,7 +352,7 @@ for inddataset = 1:length(ALLEEG)
                         end
                     end
                 case 'eventconsistency',
-                    [EEG res] = eeg_checkset(EEG);
+                    [EEG res] = Tools.eeg_checkset(EEG);
                     if isempty(EEG.event), return; end
                     
                     % check events (slow)

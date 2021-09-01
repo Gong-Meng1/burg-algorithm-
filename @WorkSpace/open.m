@@ -16,5 +16,8 @@ function open(this,~,~)
     for file = 1:length(fileList)       
         this.loadEDFFile(this, fileList(file).name)       
     end
-    
+        fileList = dir (strcat(this.RawDirectory, '*.BLE'));
+    for file = 1:length(fileList)
+        this.loadCortriumFile(this, fileList(file).name)
+    end
 end

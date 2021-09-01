@@ -12,6 +12,7 @@ classdef WorkSpace < handle
         Panel
         Tree
         ToolBox
+        ToolBoxGroup
         RawFileIcon
         TimeSeriesIcon
         FrequenciesIcon

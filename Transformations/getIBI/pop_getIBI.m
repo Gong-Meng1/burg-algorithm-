@@ -46,8 +46,9 @@ MinPeakDistance = par.MinPeakDistance*fSample;
 %% ------------------------------------------------------------------------------------------
 % are we asked to detrend the data? Detrend algorithm in this file (below).
 oData = ecgData;
-if (par.deTrend)
+if (~par.deTrend)
    ecgData = deTrend(ecgData);
+   MinPeakHeight = median(ecgData)+(2*std(ecgData));
 end
 
 
@@ -79,9 +80,9 @@ end
 end
 %%
 function ecgData = deTrend(ecgData)
-    [p,~,mu] = polyfit((1:numel(ecgData))',ecgData,6);
+    [p,~,mu] = polyfit((1:numel(ecgData))',ecgData,16);
     f_y = polyval(p,(1:numel(ecgData))',[],mu);
-    ecgData = ecgData - f_y;        % Detrend data
+    ecgData = ecgData - f_y';        % Detrend data
 end
 %%
 function PlotECGWithIBIS(ecgTimestamps,ecgData,locs,rtops)

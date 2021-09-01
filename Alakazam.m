@@ -161,7 +161,7 @@ classdef Alakazam < handle
                 if strcmp(this.Workspace.EEG.DataType, 'TIMEDOMAIN')
                     if (this.Workspace.EEG.nbchan > 1)
                         if (isfield(this.Workspace.EEG, 'ibis'))                            
-                            Tools.addECGAnn(this);
+                            uiextras.addECGAnn(this);
                         else
                             % Multichannel plot, no ibis
                             Tools.plotECG(this.Workspace.EEG.times, this.Workspace.EEG, ...
@@ -174,7 +174,7 @@ classdef Alakazam < handle
                      else
                         % Singlechannel Plot, IBIS calculated:
                         if (isfield(this.Workspace.EEG, 'ibis'))
-                            Tools.addECGAnn(this);
+                            uiextras.addECGAnn(this);
                         else
                             Tools.plotECG(this.Workspace.EEG.times, this.Workspace.EEG, 'b-',...
                                 'mmPerSec', 25,...
