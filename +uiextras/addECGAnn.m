@@ -7,7 +7,6 @@ if (this.Workspace.EEG.nbchan == 1)
         'Parent',  this.Figures(end));
 else
     Tools.plotECG(this.Workspace.EEG.times, this.Workspace.EEG, 'b-',...
-        'ShowInformationList','none',...
         'ShowAxisTicks','on',...
         'mmPerSec', 25,...
         'AutoStackSignals', {this.Workspace.EEG.chanlocs.labels},...
@@ -16,7 +15,7 @@ else
 end
 uAxis = gca;
 hold on
-%% cursor way: this really should go into PlotECG, as it slows the plotting down immensely
+%% cursor way
 ibis = [this.Workspace.EEG.ibis(:);NaN];
 for rt = 1:length(this.Workspace.EEG.RTopTime)
     ibit = this.Workspace.EEG.RTopTime(rt);
