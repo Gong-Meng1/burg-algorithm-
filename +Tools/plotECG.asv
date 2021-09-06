@@ -711,12 +711,22 @@ hs.panel.Visible = 'on';
         % so very long signals don't hang Matlab
         factor = round(numPoints/max(1,axWidth_px));
         factor_max = 1000; % increase this if you want to find the "needle in the haystack" (single outlier sample) 
-        spc = max(floor(factor / factor_max),1);
+        if factor > factor_max
+            spc = floor(factor / factor_max);
+        else
+            spc = 1;
+        end
         ind = startIndex:spc:endIndex;
         %fprintf('spc: %f\n',spc)
         
-        if isscalar(SIG.X0), XData=period*(ind-1); else, XData = SIG.X0(ind); end
-        YData = SIG.Y0(ind,:);
+        % Use original or filtered signal according to checkbox state
+        if isfield(SIG,'filter') && SIG.filter.mainCheck.Value == SIG.filter.mainCheck.Max
+            if isscalar(SIG.X), XData=1/SIG.X*(ind-1); else, XData=SIG.X(ind); end
+            YData = SIG.Y(ind,:);
+        else
+            if isscalar(SIG.X0), XData=period*(ind-1); else, XData = SIG.X0(ind); end
+            YData = SIG.Y0(ind,:);
+        end
         
         if isscalar(SIG.X0)
             startTime = XData(1);
@@ -756,27 +766,27 @@ hs.panel.Visible = 'on';
             end
         end
         
-%         if ~isempty(SIG.AutoStackSignals) && ~strcmp(parser.Results.YLimMode,'fixed')
-%             % Stack signals horizontally dynamically
-%             [sigPosVec,sigAddVec] = auto_stack(YData);
-%             hs.ax.YTick = flip(sigPosVec);
-%             hs.ax.YTickLabel = flip(SIG.AutoStackSignals(:));
-%             hs.ax.TickLabelInterpreter = 'none';
-%         end
+        if ~isempty(SIG.AutoStackSignals) && ~strcmp(parser.Results.YLimMode,'fixed')
+            % Stack signals horizontally dynamically
+            [sigPosVec,sigAddVec] = auto_stack(YData);
+            hs.ax.YTick = flip(sigPosVec);
+            hs.ax.YTickLabel = flip(SIG.AutoStackSignals(:));
+            hs.ax.TickLabelInterpreter = 'none';
+        end
         
         YData = bsxfun(@plus,YData,sigAddVec);
 
          % hs.ax2 limits
-%         if ~strcmp(parser.Results.SecondXAxisFunction,'none')
-%             ax2Limits = [feval(parser.Results.SecondXAxisFunction,startTime), feval(parser.Results.SecondXAxisFunction,endTime)];
-%             if ax2Limits(1)<ax2Limits(2)
-%                 set(hs.ax2,'XDir','normal')
-%             else
-%                 ax2Limits = flip(ax2Limits);
-%                 set(hs.ax2,'XDir','reverse')
-%             end
-%             set(hs.ax2,'XLim',ax2Limits)
-%         end
+        if ~strcmp(parser.Results.SecondXAxisFunction,'none')
+            ax2Limits = [feval(parser.Results.SecondXAxisFunction,startTime), feval(parser.Results.SecondXAxisFunction,endTime)];
+            if ax2Limits(1)<ax2Limits(2)
+                set(hs.ax2,'XDir','normal')
+            else
+                ax2Limits = flip(ax2Limits);
+                set(hs.ax2,'XDir','reverse')
+            end
+            set(hs.ax2,'XLim',ax2Limits)
+        end
 
         set(hs.line,'XData',XData);
         for iLine = 1:size(YData,2)
