@@ -630,33 +630,6 @@ end
 end
 
 
-function str = func2str2(func)
-if ischar(func)
-    str = func;
-else
-    str = func2str(func);
-end
-end
-
-
-function str = function_file(func)
-if ischar(func)
-    funH = str2func(func);
-    funS = func;
-else
-    funH = func;
-    funS = func2str(func);
-end
-S = functions(funH);
-str = S.file;
-if isempty(str)
-    str = funS;
-else 
-    str = sprintf('%s()   %s',funS,str);
-end
-end
-
-
 function [sigPosVec,sigAddVec] = auto_stack(YData)
 % Stacks Signals Horizontally with little overlap
 % Used after each scroll/zoom action for 'AutoStackSignals' 
