@@ -16,7 +16,7 @@ else
 end
 uAxis = gca;
 hold on
-%% cursor way
+%% cursor way: this really should go into PlotECG, as it slows the plotting down immensely
 ibis = [this.Workspace.EEG.ibis(:);NaN];
 for rt = 1:length(this.Workspace.EEG.RTopTime)
     ibit = this.Workspace.EEG.RTopTime(rt);
