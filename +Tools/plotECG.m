@@ -1,6 +1,6 @@
 function [ varargout ] = plotECG( varargin )
 %    Created:         Daniel Frisch        (15.02.2015)
-%    Last modified:   Daniel Frisch        (09.01.2017)
+%    Last modified:   M.Span               (07.09.2021)
 
 %% Parse Inputs
 
