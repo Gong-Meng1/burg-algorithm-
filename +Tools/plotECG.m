@@ -86,6 +86,7 @@ parser.addParameter('Units'              , 'normalized', @(x)any(validatestring(
 parser.addParameter('Position'           , [0,0,1,1]   , @(x)validateattributes(x,{'double'},{'real','finite','nonnegative', 'size',[1 4]}))
 parser.addParameter('ShowIBIS'           , 'auto'      , @(x)any(validatestring(x,{'auto','off'})))
 parser.addParameter('ShowEvents'         , 'auto'      , @(x)any(validatestring(x,{'auto','off'})))
+parser.addParameter('MaxEvents'          , 100         , @(x)validateattributes(x,{'double'},{'real','finite','positive','scalar'}))
 
 parser.parse(args{:})
 
@@ -105,6 +106,8 @@ if ~strcmp(parser.Results.ShowIBIS, 'off')
         SIG.ShowIBIS = 'off';
     end
 end
+
+%% TODO plot the durations of this type of events as areas, when > 1.
 
 if ~strcmp(parser.Results.ShowEvents, 'off')
     if ( isfield(SIG, 'EEG') && isfield(SIG.EEG, 'urevent') && ~isempty(SIG.EEG.urevent))
@@ -428,7 +431,7 @@ hs.panel.Visible = 'on';
             showRTi = (SIG.RTop>startTime) & (SIG.RTop < endTime);
             plottedIBIS = SIG.RTop(showRTi);
             Labels = SIG.ibi(showRTi);
-            if (length(plottedIBIS) < 100) 
+            if (length(plottedIBIS) < parser.Results.MaxEvents) 
             for rt = 1:length(plottedIBIS)
                 cursor(hs.ax, ...
                     plottedIBIS(rt), ...
@@ -450,7 +453,7 @@ hs.panel.Visible = 'on';
             showEvents = (SIG.EventTime>startTime) & (SIG.EventTime < endTime);
             plottedEv = SIG.EventTime(showEvents);
             Labels = SIG.EventLabel(showEvents);
-            if (length(plottedEv) < 100)
+            if (length(plottedEv) < parser.Results.MaxEvents)
             for rt = 1:length(plottedEv)
                 cursor(hs.ax, ...
                     plottedEv(rt), ...
