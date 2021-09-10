@@ -59,11 +59,11 @@ catch ME
     rethrow(ME);
 end
 
-%% TODO add them to the urevent field of the EEG struct
+%% Because the eventtimes for the r-top are interpolated they do not fit 
+%% the urevent structure. We keep them separated
 
-% then this can go
-EEGstruct.RTopTime = ecgTimestamps(locs) + correction;
-EEGstruct.RTopVal = ecgData(locs);
-EEGstruct.ibis = round(diff(EEGstruct.RTopTime),3);
+EEGstruct.IBIevent.RTopTime = ecgTimestamps(locs) + correction;
+EEGstruct.IBIevent.RTopVal = ecgData(locs);
+EEGstruct.IBIevent.ibis = round(diff(EEGstruct.IBIevent.RTopTime),3);
 
 end

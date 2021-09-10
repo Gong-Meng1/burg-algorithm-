@@ -1,12 +1,11 @@
 function [ varargout ] = plotECG( varargin )
 %    Created:         Daniel Frisch        (15.02.2015)
-%    Last modified:   Daniel Frisch        (09.01.2017)
+%    Last modified:   M.Span               (07.09.2021)
 
 %% Parse Inputs
 
 args = varargin;
 
-iSig = 1;
 SIG = struct;
 
 defaultXLabel = 'Time in s';
@@ -86,6 +85,8 @@ parser.addParameter('Parent'             , 0           , @(x)isscalar(x) && isgr
 parser.addParameter('Units'              , 'normalized', @(x)any(validatestring(x,{'pixels','normalized','inches','centimeters','points','characters'})))
 parser.addParameter('Position'           , [0,0,1,1]   , @(x)validateattributes(x,{'double'},{'real','finite','nonnegative', 'size',[1 4]}))
 parser.addParameter('ShowIBIS'           , 'auto'      , @(x)any(validatestring(x,{'auto','off'})))
+parser.addParameter('ShowEvents'         , 'auto'      , @(x)any(validatestring(x,{'auto','off'})))
+
 parser.parse(args{:})
 
 SIG.AutoStackSignals = parser.Results.AutoStackSignals;
@@ -96,10 +97,20 @@ if ~isempty(SIG.AutoStackSignals)
 end
 
 if ~strcmp(parser.Results.ShowIBIS, 'off')
-    if ( isfield(SIG, 'EEG') && isfield(SIG.EEG, 'ibis') && isfield(SIG.EEG, 'RTopTime'))
+    if ( isfield(SIG, 'EEG') && isfield(SIG.EEG, 'IBIevent'))
         SIG.ShowIBIS = 'on';
-        SIG.RTop = SIG.EEG.RTopTime;
-        SIG.ibi  = [SIG.EEG.ibis NaN];
+        SIG.RTop = SIG.EEG.IBIevent.RTopTime;
+        SIG.ibi  = [SIG.EEG.IBIevent.ibis NaN];
+    else
+        SIG.ShowIBIS = 'off';
+    end
+end
+
+if ~strcmp(parser.Results.ShowEvents, 'off')
+    if ( isfield(SIG, 'EEG') && isfield(SIG.EEG, 'urevent'))
+        SIG.ShowEvents = 'on';
+        SIG.EventTime = [SIG.EEG.urevent.latency];
+        SIG.ibi  = [SIG.EEG.IBIevent.ibis NaN];
     else
         SIG.ShowIBIS = 'off';
     end

@@ -85,6 +85,8 @@ parser.addParameter('Parent'             , 0           , @(x)isscalar(x) && isgr
 parser.addParameter('Units'              , 'normalized', @(x)any(validatestring(x,{'pixels','normalized','inches','centimeters','points','characters'})))
 parser.addParameter('Position'           , [0,0,1,1]   , @(x)validateattributes(x,{'double'},{'real','finite','nonnegative', 'size',[1 4]}))
 parser.addParameter('ShowIBIS'           , 'auto'      , @(x)any(validatestring(x,{'auto','off'})))
+parser.addParameter('ShowEvents'         , 'auto'      , @(x)any(validatestring(x,{'auto','off'})))
+
 parser.parse(args{:})
 
 SIG.AutoStackSignals = parser.Results.AutoStackSignals;
@@ -95,12 +97,22 @@ if ~isempty(SIG.AutoStackSignals)
 end
 
 if ~strcmp(parser.Results.ShowIBIS, 'off')
-    if ( isfield(SIG, 'EEG') && isfield(SIG.EEG, 'ibis') && isfield(SIG.EEG, 'RTopTime'))
+    if ( isfield(SIG, 'EEG') && isfield(SIG.EEG, 'IBIevent'))
         SIG.ShowIBIS = 'on';
-        SIG.RTop = SIG.EEG.RTopTime;
-        SIG.ibi  = [SIG.EEG.ibis NaN];
+        SIG.RTop = SIG.EEG.IBIevent.RTopTime;
+        SIG.ibi  = [SIG.EEG.IBIevent.ibis NaN];
     else
         SIG.ShowIBIS = 'off';
+    end
+end
+
+if ~strcmp(parser.Results.ShowEvents, 'off')
+    if ( isfield(SIG, 'EEG') && isfield(SIG.EEG, 'urevent') && ~isempty(SIG.EEG.urevent))
+        SIG.ShowEvents = 'on';
+        SIG.EventTime = SIG.EEG.times([SIG.EEG.urevent.latency]);
+        SIG.EventLabel = {SIG.EEG.urevent.type};
+    else
+        SIG.ShowEvents = 'off';
     end
 end
 %% Add the GUI components
@@ -407,13 +419,16 @@ hs.panel.Visible = 'on';
             maxY = max([maxY;sigPosVec(:)]);
         end
         
-        oldlines = findobj(hs.ax, 'Tag', 'ibi');
-        delete(oldlines);
+        prevIBI = findobj(hs.ax, 'Tag', 'ibi');
+        delete(prevIBI);
+        prevUrevent = findobj(hs.ax, 'Tag', 'urevent');
+        delete(prevUrevent);
         
         if ~strcmp(SIG.ShowIBIS, 'off')
             showRTi = (SIG.RTop>startTime) & (SIG.RTop < endTime);
             plottedIBIS = SIG.RTop(showRTi);
             Labels = SIG.ibi(showRTi);
+            if (length(plottedIBIS) < 100) 
             for rt = 1:length(plottedIBIS)
                 cursor(hs.ax, ...
                     plottedIBIS(rt), ...
@@ -427,6 +442,28 @@ hs.panel.Visible = 'on';
                     'UserData', rt);
                 % ,...
                 
+            end
+            end
+        end
+        
+        if ~strcmp(SIG.ShowEvents, 'off')
+            showEvents = (SIG.EventTime>startTime) & (SIG.EventTime < endTime);
+            plottedEv = SIG.EventTime(showEvents);
+            Labels = SIG.EventLabel(showEvents);
+            if (length(plottedEv) < 100)
+            for rt = 1:length(plottedEv)
+                cursor(hs.ax, ...
+                    plottedEv(rt), ...
+                    [],[],...
+                    'Color', [.1,.3,.8,.3],...
+                    'LineStyle', ':', ...
+                    'Label',  Labels(rt), ...
+                    'LabelVerticalAlignment', 'top', ...
+                    'LabelHorizontalAlignment', 'right',...
+                    'Tag', 'urevent',...
+                    'UserData', rt);
+                % ,... 
+            end
             end
         end
         
