@@ -27,7 +27,7 @@ h=max(1,floor(sqrt(nchan)));
 w = ceil(nchan/h);
 
 for p = 1:nchan
-    ax(p) = Tools.subplot_tight(w,h,p,[0.035,0.03]); %#ok<AGROW>
+    ax(p) = uiextras.subplot_tight(w,h,p,[0.035,0.03]); %#ok<AGROW>
     cla;
     hold on;
    for band = 1:6

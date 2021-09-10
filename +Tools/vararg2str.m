@@ -102,7 +102,7 @@ for index = 1:length(allargs)
 		elseif isnumeric( tmpvar ) || islogical( tmpvar )
 			strout = [ strout ',' array2str( tmpvar ) ];
 		elseif iscell( tmpvar )
-            tmpres = vararg2str( tmpvar );
+            tmpres = Tools.vararg2str( tmpvar );
 %             comas  = find( tmpres == ',' );
 %             tmpres(comas) = ' ';
 			strout = [ strout ',{' tmpres '}' ];

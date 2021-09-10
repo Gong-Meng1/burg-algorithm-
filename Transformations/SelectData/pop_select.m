@@ -134,7 +134,7 @@ if nargin < 2
          { 'Style', 'edit', 'string', '', 'tag', 'chans' }, ...
          { }, { 'Style', 'checkbox', 'string', '    ' }, ...
          { 'style' 'pushbutton' 'string'  '...', 'enable' Tools.fastif(isempty(EEG.chanlocs), 'off', 'on') ...
-           'callback' 'tmpchanlocs = EEG(1).chanlocs; [tmp tmpval] = pop_chansel({tmpchanlocs.labels}, ''withindex'', ''on''); set(findobj(gcbf, ''tag'', ''chans''), ''string'',tmpval); clear tmp tmpchanlocs tmpval' }, ...
+           'callback' 'tmpchanlocs = EEG(1).chanlocs; [tmp tmpval] = Tools.pop_chansel({tmpchanlocs.labels}, ''withindex'', ''on''); set(findobj(gcbf, ''tag'', ''chans''), ''string'',tmpval); clear tmp tmpchanlocs tmpval' }, ...
            { }, { }, { 'Style', 'pushbutton', 'string', 'Scroll dataset', 'enable', Tools.fastif(length(EEG)>1, 'off', 'on'), 'callback', ...
                           'eegplot(EEG.data, ''srate'', EEG.srate, ''winlength'', 5, ''limits'', [EEG.xmin EEG.xmax]*1000, ''position'', [100 300 800 500], ''xgrid'', ''off'', ''eloc_file'', EEG.chanlocs);' } {}};
    results = uiextras.inputgui( geometry, uilist, 'pophelp(''pop_select'');', 'Select data -- pop_select()' );
@@ -160,7 +160,7 @@ if nargin < 2
    end
 
    if ~isempty( results{7} )
-       [ chaninds chanlist ] = eeg_decodechan(EEG.chanlocs, results{7});
+       [ chaninds chanlist ] = Tools.eeg_decodechan(EEG.chanlocs, results{7});
        if isempty(chanlist), chanlist = chaninds; end
        if ~results{8}, args = { args{:}, 'channel'  , chanlist };
        else            args = { args{:}, 'nochannel', chanlist }; end
@@ -541,8 +541,8 @@ end
 if ~isequal(g.channel,1:size(EEG.data,1)) || ~isequal(g.trial,1:size(EEG.data,3))
     %EEG.data  = EEG.data(g.channel, :, g.trial);
     % this code belows is prefered for memory mapped files
-    diff1 = setdiff_bc([1:size(EEG.data,1)], g.channel);
-    diff2 = setdiff_bc([1:size(EEG.data,3)], g.trial);
+    diff1 = Tools.setdiff_bc([1:size(EEG.data,1)], g.channel);
+    diff2 = Tools.setdiff_bc([1:size(EEG.data,3)], g.trial);
     if ~isempty(diff1)
          EEG.data(diff1, :, :) = [];
     end

@@ -7,7 +7,7 @@ if (nargin < 1)
     ME = MException('Alakazam:IBIExport','Problem in IBIExport: No Data Supplied');
     throw(ME);
 end
-if ~isfield(input, 'ibis')
+if ~isfield(input, 'IBIevent')
     ME = MException('Alakazam:IBIExport','Problem in IBIExport: No IBIS availeable (yet)');
     throw(ME);
 end
@@ -25,26 +25,26 @@ else
         {'Resample' ; 'rsamp'},  {'yes','no'});       
 end
 
-csvwrite(fullfile(p,options.fname), input.ibis')
+csvwrite(fullfile(p,options.fname), input.IBIevent.ibis')
 
 EEG=input;
 if (strcmp(options.cdif, 'yes'))
-    EEG.data = double([input.ibis' [NaN diff(input.ibis)]']);
+    EEG.data = double([input.IBIevent.ibis' [NaN diff(input.IBIevent.ibis)]']);
     EEG.nbchan = 2;
 else
-    EEG.data = double(input.ibis');
+    EEG.data = double(input.IBIevent.ibis');
     EEG.nbchan = 1;
 end
 
 if (strcmp(options.rsamp, 'yes'))
-    [EEG.data, EEG.times] = resample(EEG.data, double(EEG.RTopTime(1:end-1)), EEG.srate);
+    [EEG.data, EEG.times] = resample(EEG.data, double(EEG.IBIevent.RTopTime(1:end-1)), EEG.srate);
 else
-    EEG.times = double(EEG.RTopTime(1:end-1));
+    EEG.times = double(EEG.IBIevent.RTopTime(1:end-1));
     EEG.srate = 0;
 end    
 EEG.YLabel = 'IBI in ms.'
 EEG.data = EEG.data';
-EEG = rmfield(EEG, 'ibis');
+EEG = rmfield(EEG, 'IBIevent');
 
 EEG.chanlocs(1).labels = 'IBI';
 EEG.chanlocs(2).labels = 'IBIdif';

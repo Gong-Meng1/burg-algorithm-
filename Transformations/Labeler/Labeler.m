@@ -24,6 +24,7 @@ allvars =  evalin('base', 'who');
 
 if length(existingvars) ~= length(allvars)
     newvar = setdiff(allvars,existingvars);
+    newvar = newvar{1};
 else
     newvar = 'ls'; % default when a previous variable is overwritten by the labeler.
 end

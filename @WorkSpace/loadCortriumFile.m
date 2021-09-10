@@ -42,6 +42,9 @@ end
 
 tn = uiextras.jTree.TreeNode('Name',id, 'UserData', matfilename, 'Parent', this.Tree.Root);
 setIcon(tn,this.RawFileIcon);
+%% Now recursively check for children of this file, and read them if they are there there.
+this.treeTraverse(id, WS.CacheDirectory, tn);
+
 
     function EEG = readRawCortrium(fname, id)
         full_path = [fname];
