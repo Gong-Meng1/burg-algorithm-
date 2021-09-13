@@ -1,5 +1,5 @@
 classdef label
-    % cursor: an moveable verical line (event)
+    % cursor: an moveable verical area (period)
     properties
         vpatch
         motionCallback

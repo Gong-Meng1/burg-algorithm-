@@ -484,6 +484,11 @@ hs.panel.Visible = 'on';
                 end
             end
             %% now plot the areas: greenish label
+            
+            %% This needs refining: this will show the area when the **start** is in the view
+            % should be if any part of the area is within the view. Think
+            % Mark! Would be fun if the label would say in the view.....
+            
             showEvents = (SIG.AreaEventTime>startTime) & (SIG.AreaEventTime < endTime);
             
             plottedEv = SIG.AreaEventTime(showEvents);

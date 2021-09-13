@@ -25,7 +25,7 @@ ecgTimestamps = EEGstruct.times;
 %%  default values:
 fSample = EEGstruct.srate;
 MinPeakHeight = median(ecgData)+(2*std(ecgData));
-par.MinPeakDistance = .50; %seconds!
+par.MinPeakDistance = .33; %seconds!
 
 %% Parse the name - value pairs found in varargin
 %------------------------------------------------------------------------------------------

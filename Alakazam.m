@@ -19,6 +19,7 @@ classdef Alakazam < handle
     methods
         
         function this = Alakazam(varargin)
+            addpath(pwd);
             warning('off', 'MATLAB:ui:javacomponent:FunctionToBeRemoved');
             addpath(genpath('Transformations'), 'mlapptools');
             
@@ -61,7 +62,7 @@ classdef Alakazam < handle
         
         function ActionOnTransformation(this, ~, ~, userdata)
             % this function is the callback for all transformations.
-            %try
+            try
                 f = findobj('Type', 'Figure','Tag', this.Workspace.EEG.File);
                 set(f,'Pointer','watch');
             
@@ -110,11 +111,12 @@ classdef Alakazam < handle
                 plotCurrent(this);
                 set(f,'Pointer','arrow');
 
-            %catch ME
+            catch ME
+                set(f,'Pointer','arrow');
                 %warndlg(ME.message, 'Error in transformation');
                 %throw (ME)
                 %;
-            %end
+            end
         end
         
         function plotCurrent(this)
@@ -160,7 +162,7 @@ classdef Alakazam < handle
                 %% NOT EPOPCHED: CONTINUOUS
                 if strcmp(this.Workspace.EEG.DataType, 'TIMEDOMAIN')
                     if (this.Workspace.EEG.nbchan > 1)
-                            % Multichannel plot, no ibis
+                            % Multichannel plot
                             Tools.plotECG(this.Workspace.EEG.times, this.Workspace.EEG, ...
                                 'ShowAxisTicks','on',...
                                 'YLimMode', 'fixed', ...
@@ -168,39 +170,13 @@ classdef Alakazam < handle
                                 'AutoStackSignals', {this.Workspace.EEG.chanlocs.labels},...
                                 'Parent',  this.Figures(end));
                     else
-                        % Singlechannel Plot, IBIS calculated:
+                        % Singlechannel Plot,
                            Tools.plotECG(this.Workspace.EEG.times, this.Workspace.EEG, 'b-',...
                                 'mmPerSec', 25,...
                                 'ShowAxisTicks','on',...
                                 'YLimMode', 'fixed',...
                                 'Parent',  this.Figures(end));
                     end
-                    %% Plot the UREvents
-%                     hold on
-%                     limits = ylim();
-%                     if (isfield(this.Workspace.EEG, 'urevent'))
-%                     for i = 1:length(this.Workspace.EEG.urevent)
-%                         xpos1 = this.Workspace.EEG.urevent(i).latency / this.Workspace.EEG.srate;
-%                         if (this.Workspace.EEG.urevent(i).duration > 1)
-%                             xpos2 = xpos1 + ((this.Workspace.EEG.urevent(i).duration / this.Workspace.EEG.srate)-1);
-%                             patch('Faces',[1 2 3 4], 'Vertices', [xpos1 limits(1)-2*diff(limits); xpos2 limits(1)-2*diff(limits); xpos2 limits(2); xpos1 limits(2)], ...
-%                                 'FaceVertexAlphaData',[.6 .6 .5 .5]',...
-%                                 'FaceColor', [.1 .1 .4], 'FaceAlpha', 'interp', 'EdgeAlpha', .2, 'EdgeColor', 'blue');
-%                             text(xpos1, min(limits)+(.01*(abs(limits(2)-limits(1)))),  this.Workspace.EEG.urevent(i).type, ...
-%                                 'FontSize', 8, ...
-%                                 'HorizontalAlignment', 'left', ...
-%                                 'Color', [.6,1,1,.1]);
-%                         else
-%                             cursor(gca,xpos1,[],[], 'Color', [0,0,.3,.4], ...
-%                                 'Label', this.Workspace.EEG.urevent(i).type, ...
-%                                 'LabelVerticalAlignment', 'bottom', ...
-%                                 'LabelHorizontalAlignment', 'center',...
-%                                 'LineStyle', ':');
-%                         end
-%                     end
-%                     end
-%                     hold off
-%                     
                 else
                     %Fourier Plot
                     Tools.plotFourier(this.Workspace.EEG, this.Figures(end));
