@@ -23,7 +23,7 @@ for e = 1:length(codes)
         urevent(end).channel = 0;
         urevent(end).bvtime = 0;
         urevent(end).bvmknum = bvindex; bvindex = bvindex + 1;
-        urevent(end).type = vals.(codes(e)){1,1}.Value(i);
+        urevent(end).type = char(vals.(codes(e)){1,1}.Value(i));
         urevent(end).code = codes(e);
     end
 end
