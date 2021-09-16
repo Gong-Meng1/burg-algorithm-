@@ -13,6 +13,10 @@ function open(this,~,~)
         mkdir(this.ExportsDirectory);
     end
 
+    fileList = dir (strcat(this.RawDirectory, '*.mat'));
+    for file = 1:length(fileList)
+        this.loadMATFile(this, fileList(file).name)
+    end
     fileList = dir (strcat(this.RawDirectory, '*.vhdr'));
     for file = 1:length(fileList)
         this.loadBVAFile(this, fileList(file).name)

@@ -9,9 +9,9 @@ function EEG = labeledSignalSet2EEG(EEG)
 if isempty(EEG) || isempty(EEG.lss)
     return
 end
+
 codes = getLabelNames(EEG.lss);
 vals = getLabelValues(EEG.lss);
-
 
 urevent = [];
 bvindex = 1;
@@ -24,7 +24,7 @@ for e = 1:length(codes)
         urevent(end).bvtime = 0;
         urevent(end).bvmknum = bvindex; bvindex = bvindex + 1;
         urevent(end).type = char(vals.(codes(e)){1,1}.Value(i));
-        urevent(end).code = codes(e);
+        urevent(end).code = char(codes(e));
     end
 end
 EEG.urevent = urevent;

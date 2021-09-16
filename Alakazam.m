@@ -113,7 +113,7 @@ classdef Alakazam < handle
 
             catch ME
                 set(f,'Pointer','arrow');
-                %warndlg(ME.message, 'Error in transformation');
+                warndlg(ME.message, 'Error in transformation');
                 %throw (ME)
                 %;
             end
