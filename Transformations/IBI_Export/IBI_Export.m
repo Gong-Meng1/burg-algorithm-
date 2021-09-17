@@ -1,4 +1,8 @@
 function [EEG, options] = IBI_Export(input,opts)
+%% function to export the IBI timeseries to an CSV file, optionally creating a new
+% timeseries, the resampled IBI timeseries over the original time-axis. 
+% can also create the IBI differences as a similar trace.
+
 %% Check for the EEG dataset input:
 if (nargin < 1)
     ME = MException('Alakazam:IBIExport','Problem in IBIExport: No Data Supplied');
