@@ -1,4 +1,6 @@
 function [EEG, options] = FlipECG(input,opts)
+%% Flip the EGC trace if it is upside down....
+
 %% Check for the EEG dataset input:
 if (nargin < 1)
     throw(MException('Alakazam:FlipECG','Problem in FlipECG: No Data Supplied'));
