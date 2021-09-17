@@ -9,7 +9,7 @@ if ~isfield(input, 'IBIevent')
     throw(ME);
 end
     
-[p,n,~] = fileparts(input.File);
+[~,n,~] = fileparts(input.File);
 if exist('opts', 'var')
     options = opts;
 else    
@@ -23,6 +23,7 @@ else
         {'Calculate subsequent differences'; 'cdif'}, {'yes','no'},...
         {'Resample' ; 'rsamp'},  {'yes','no'});       
 end
+
 RTop = squeeze(input.IBIevent.RTopTime(1:end-1))';
 IBI = squeeze(input.IBIevent.ibis)';
 out = table(RTop,IBI);
@@ -51,8 +52,6 @@ if strcmpi(options.bylabel, 'yes')
     for ev = [input.urevent]
         label = ev.code;
         value = ev.type;
-        
-        % ev.latency; ev.duration
         t = out.RTop;
         d = out.(matlab.lang.makeValidName(label + "_" + value));
         tstart = ev.latency / srate;
@@ -62,7 +61,8 @@ if strcmpi(options.bylabel, 'yes')
     end
 end
 
-writetable(out, fullfile(p,options.fname))
+ExportsDir = evalin('caller', 'this.Workspace.ExportsDirectory');
+writetable(out, fullfile(ExportsDir,options.fname))
 
 EEG=input;
 if (strcmp(options.cdif, 'yes'))
