@@ -9,7 +9,7 @@ par = [];
 ecgData = EEGstruct.data;
 if (size(EEGstruct.data,1) >1 )
     try
-        ecgid = contains({EEGstruct.chanlocs.labels},'ECG');
+        ecgid = strcmpi({EEGstruct.chanlocs.labels},'ECG');
     catch ME %#ok<NASGU>
         return
     end
