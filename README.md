@@ -4,11 +4,14 @@ Modular ECG analysis software package in MATLAB
 ![Screenshot](/ScreenShot.jpg)
 
 The general idea is to create a user interface to do ECG analysis. This is work in progress!
+Currently reading [Brainvision files](https://www.brainproducts.com/), [Cortrium files](https://www.cortrium.com/), EDF files / XDF files and .mat files made from [EEGLAB](https://sccn.ucsd.edu/eeglab/index.php)
 
 The interface is based on the [Toolgroup](http://undocumentedmatlab.com/articles/matlab-toolstrip-part-2-toolgroup-app) demo, and is vey much influenced by the "[Brainvision Analyser](https://www.brainproducts.com/promo_analyzer2.php)" interface.
 Timeseries plotting based on [plotECG](https://nl.mathworks.com/matlabcentral/fileexchange/59296-daniel-frisch-kit-plot-ecg)  by Daniel Frisch. 
 The generic data object used for a study is the [EEGLAB](https://sccn.ucsd.edu/eeglab/index.php) "EEG" structure. Alakazam does put some extra info in this structure when it writes its own .mat files.
 Take a look at the "Transformations" directory to get the idea of how to add computations to the package.
+
+This is a simple exaple from there:
 
 ``` Matlab
 function [EEG, options] = IBI_Export(input,opts)
