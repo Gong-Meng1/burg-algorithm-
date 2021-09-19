@@ -257,7 +257,6 @@ classdef Alakazam < handle
             save(a.EEG.File, 'EEG');
             this.Workspace.EEG=EEG;
         end
-        
         function MouseClicked(this,Tree,args)
             if (args.Button == 1) % left Button
                 %if (args.Clicks == 2) % double click left button

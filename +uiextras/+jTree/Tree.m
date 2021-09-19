@@ -640,8 +640,8 @@ classdef Tree < hgsetget
                         mPos = [x+tPos(1) tPos(2)+tPos(4)-y+tObj.jScrollPane.getVerticalScrollBar().getValue()];
                         set(CMenu,'Position',mPos,'Visible','on');
                     end
-                    
-                elseif ~isempty(tObj.MouseClickedCallback)
+                end
+                if ~isempty(tObj.MouseClickedCallback)
                     % Do the following for a custom MouseClickedCallback
                     
                     % Call the custom callback
@@ -649,6 +649,7 @@ classdef Tree < hgsetget
                         'Position',[x,y],...
                         'Nodes',nObj, ...
                         'Button', e.getButton, ...
+                        'isMetaDown', e.isMetaDown, ...
                         'Clicks', e.getClickCount);
                     hgfeval(tObj.MouseClickedCallback,tObj,e1);
                     
