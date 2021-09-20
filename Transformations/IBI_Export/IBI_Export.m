@@ -75,10 +75,10 @@ end
 
 EEG=input;
 if (strcmp(options.cdif, 'yes'))
-    EEG.data = double([input.IBIevent.ibis' [NaN diff(input.IBIevent.ibis)]']);
+    EEG.data = double([1.0./input.IBIevent.ibis' [NaN diff(input.IBIevent.ibis)]']);
     EEG.nbchan = 2;
 else
-    EEG.data = double(input.IBIevent.ibis');
+    EEG.data = double(1.0./input.IBIevent.ibis');
     EEG.nbchan = 1;
 end
 
@@ -88,11 +88,12 @@ else
     EEG.times = double(EEG.IBIevent.RTopTime(1:end-1));
     EEG.srate = 0;
 end    
-EEG.YLabel = 'IBI in ms.'
+
+EEG.YLabel = 'IBI in ms.';
 EEG.data = EEG.data';
 EEG = rmfield(EEG, 'IBIevent');
 
-EEG.chanlocs(1).labels = 'IBI';
+EEG.chanlocs(1).labels = 'HR';
 EEG.chanlocs(2).labels = 'IBIdif';
 EEG.chanlocs = EEG.chanlocs (1:2);
 
