@@ -18,7 +18,7 @@ function CreateTreeComponent(this)
     this.ToolBox = javaObjectEDT('javax.swing.JPanel',javaObjectEDT('java.awt.GridLayout',3,2,0,10));    
     this.javaObjects = this.Tree.getJavaObjects();
     this.Panel.add(this.javaObjects.jScrollPane, 'Center');
-    this.DefaultToolBox();
+%    this.DefaultToolBox();
     
     %% For no obvious reason I put the used icons within "this" class, the Workspace...
     

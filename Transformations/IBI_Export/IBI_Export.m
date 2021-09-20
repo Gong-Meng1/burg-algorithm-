@@ -45,6 +45,7 @@ end
 if strcmpi(options.bylabel, 'yes')  
     srate = input.srate;
     % Create the variables in the table
+    % TODO exclude zero-duration blocks.
     for label = unique({input.urevent.code})
         types = {input.urevent.type};
         labels = {input.urevent.code};
