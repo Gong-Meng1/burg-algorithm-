@@ -72,6 +72,14 @@ classdef Alakazam < handle
                 functionCall= ['EEG=' id '(x.EEG);'];
                 
                 [a.EEG, used_params] = feval(id, this.Workspace.EEG);
+                
+                if ishandle(a.EEG)
+                    %% the function returned a handle: this means there is
+                    % no real transformation: the function returned a plot.
+                    plotFigure(this, a.EEG);
+                    return
+                end
+                
                 a.EEG.Call = functionCall;
                 if (isstruct(used_params))
                     a.EEG.params = used_params;
@@ -117,6 +125,14 @@ classdef Alakazam < handle
                 %throw (ME)
                 %;
             end
+        end
+        
+        function plotFigure(this, figureHandle)
+            % add plot as a new document
+            this.Figures(end+1) = figureHandle;
+            this.ToolGroup.addFigure(this.Figures(end));
+            this.Figures(end).Visible = 'on';
+            set(this.Figures(end), 'Toolbar', 'none');
         end
         
         function plotCurrent(this)
