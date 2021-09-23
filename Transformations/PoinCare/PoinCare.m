@@ -93,10 +93,21 @@ else
     events = input.urevent;
     idx = strcmp({events(:).code}, options.label);
     events = events(idx);
-    types = unique({events.type}) 
+    types = unique({events.type}) ;
+       
+    for ev = events
+        value = ev.type;
+        t = out.RTop;
+        d = out.(matlab.lang.makeValidName(label + "_" + value));
+        tstart = ev.latency / srate;
+        tend   = (ev.latency + ev.duration) / srate;
+        d((t>tstart) & (t<tend)) = true;
+        out.(matlab.lang.makeValidName(label + "_" + value)) = d;
+    end
     
-    colors = zeros(length(ibix));
-    
+    for t = unique(types)
+        
+    end
     
     sd1 = round((sqrt(2)/2.0) * std(ibix-ibiy),3);
     sd2 = round( sqrt(2*std(ibix)^2) - (.5*std(ibix-ibiy)^2),3);
