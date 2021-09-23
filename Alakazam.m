@@ -132,7 +132,7 @@ classdef Alakazam < handle
             this.Figures(end+1) = figureHandle;
             this.ToolGroup.addFigure(this.Figures(end));
             this.Figures(end).Visible = 'on';
-            set(this.Figures(end), 'Toolbar', 'none');
+            set(this.Figures(end), 'Toolbar', 'figure');
         end
         
         function plotCurrent(this)
