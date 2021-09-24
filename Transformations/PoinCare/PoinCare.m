@@ -50,9 +50,18 @@ options = uiextras.settingsdlg(...
     'separator' , 'Plot Parameters:',...
     {'Delta' ;'delta' }, 1,...
     {'Origin included'; 'origin'}, {'yes', 'no'},...
+    {'Dots or Lines?'; 'type'}, {'dots','lines', 'both'},...
     'separator' , 'Use Labels:',...
     {'By Label' ;'bylabel' }, {'no', 'yes'}, ...
     {'Use:'; 'label'}, ev);
+end
+
+if strcmp(options.type, 'lines')
+    type = '-';
+elseif strcmp(options.type, 'both')
+    type = '-o';
+else
+    type = 'o';
 end
 
 pax = axes(pfigure);
@@ -86,46 +95,56 @@ if strcmp(options.bylabel, 'no')
     
 else
     
-    ibix = input.IBIevent.ibis(1:end-options.delta);
-    ibiy = input.IBIevent.ibis(1+options.delta:end);
-    ibit = input.IBIevent.RTopTime(1:end-1-options.delta);
+    ibix = input.IBIevent.ibis(1:end-options.delta)';
+    ibiy = input.IBIevent.ibis(1+options.delta:end)';
+    ibit = input.IBIevent.RTopTime(1:end-1-options.delta)';
     
     events = input.urevent;
     idx = strcmp({events(:).code}, options.label);
     events = events(idx);
-    types = unique({events.type}) ;
-       
+    
+    out = table(ibit,ibix, ibiy);
     for ev = events
-        value = ev.type;
-        t = out.RTop;
-        d = out.(matlab.lang.makeValidName(label + "_" + value));
-        tstart = ev.latency / srate;
-        tend   = (ev.latency + ev.duration) / srate;
-        d((t>tstart) & (t<tend)) = true;
-        out.(matlab.lang.makeValidName(label + "_" + value)) = d;
+        if ~ismember(matlab.lang.makeValidName(ev.code), out.Properties.VariableNames)
+            out = [out table(cell(length(ibix),1))]; %#ok<AGROW>
+            for i = 1:length(ibix)
+                out(i,end) = {'UnLabeled'};
+            end
+            out.Properties.VariableNames(end) = {matlab.lang.makeValidName(ev.code)};
+        end
+        d = out.(matlab.lang.makeValidName(ev.code));
+        tstart = ev.latency / input.srate;
+        tend   = (ev.latency + ev.duration) / input.srate;
+        d((ibit>tstart) & (ibit<tend)) = {ev.type};
+        out.(matlab.lang.makeValidName(ev.code)) = d;
     end
     
-    for t = unique(types)
+    
+    labels = table2cell(unique(out(:,end)));
+    for i = 1:length(labels)
+        p=labels(i);
+        ix = out.ibix(strcmpi(table2cell(out(:,end)), p));
+        iy = out.ibiy(strcmpi(table2cell(out(:,end)), p));
         
+        plot(pax, ix, iy, type, 'MarkerSize', 8);
+        hold on
+        sd1(i) = round( (sqrt(2)/2.0) * std(ix-iy), 3); %#ok<AGROW>
+        sd2(i) = round( sqrt(2*std(ix)^2 ) - (.5*std(ix-iy)^2),3); %#ok<AGROW>
     end
-    
-    sd1 = round((sqrt(2)/2.0) * std(ibix-ibiy),3);
-    sd2 = round( sqrt(2*std(ibix)^2) - (.5*std(ibix-ibiy)^2),3);
-    
-    plot(pax, ibix, ibiy);
     hold on
-    plot (xlim, ylim, ':r', 'LineWidth', 2);
-    axis square;
-    title(input.id);
-    
-    sd1text = text(min(xlim)+.01*diff(xlim), .99*max(ylim), ['SD1 = ' num2str(sd1) ' s'], 'Units', 'data');
-    sd2text = text(min(xlim)+.01*diff(xlim), .98*max(ylim), ['SD2 = ' num2str(sd2) ' s'], 'Units', 'data');
-    
-    s1 = get(sd1text, 'Extent');
-    s2 = get(sd2text, 'Extent');
-    
-    text(max(s1(1)+s1(3),s2(1)+s2(3)), .985*max(ylim), ['SD2/SD1 = ' num2str(sd2/sd1)], 'Units', 'data');
-    
+    if strcmp(options.origin, 'yes')
+        a=xlim;
+        xlim([0 a(2)])
+        ylim([0 a(2)])
+    end
+    for i = 1:length(labels)
+        labels(i) = {[char(labels(i)) ' (sd1= '  num2str(sd1(i)) ' sd2= '  num2str(sd2(i)) ')']}; 
+    end
+    plot (pax, xlim, ylim, ':r', 'LineWidth', 2);
+    axis(pax, 'square')
+    title(pax, input.id);
+    grid minor
+    legend(pax,labels, 'Location', 'southeast');         
 end
 %% could make some sliders/buttons here (to the side?) that interact with the poincare.
 

@@ -1,5 +1,4 @@
 classdef Alakazam < handle
-    % Brainvision analyser like program created in MATLAB
     %
     % Based On:
     % "matlab.ui.internal.desktop.showcaseMPCDesigner()" Author(s): R. Chen
@@ -12,7 +11,6 @@ classdef Alakazam < handle
     properties (Transient = false)
         ToolGroup
         Figures
-        FDropHandler
         Workspace
     end
     
