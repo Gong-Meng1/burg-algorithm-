@@ -4,16 +4,17 @@ classdef cursor
         vline
         motionCallback
         upCallback
-        pfigure
+        pAxes
+        pFigure
     end
     
     methods
         function obj = cursor( hAxes, pos, mcallback, ucallback, varargin)
             % cursor Construct an instance of this class
-            
             obj.motionCallback  = mcallback;    
             obj.upCallback      = ucallback;
-            obj.pfigure = gcf;
+            obj.pAxes = hAxes;
+            obj.pFigure = get(get(hAxes, 'Parent'), 'Parent');
             if isempty(mcallback) && isempty(ucallback)
                 obj.vline = xline(pos,  ...
                     'Parent', hAxes, ...
@@ -27,12 +28,12 @@ classdef cursor
         end
         
         function buttondn(obj, h, events)
-            ud = get(obj.pfigure,'UserData');            
+            ud = get(obj.pFigure,'UserData');            
             
             ud.vline = h;
             ud.downEvents = events;
             
-            set(obj.pfigure,'UserData', ud, ...
+            set(obj.pFigure,'UserData', ud, ...
                 'WindowButtonMotionFcn',@obj.buttonmotion,...
                 'WindowButtonUpFcn',@obj.buttonup);         
         end

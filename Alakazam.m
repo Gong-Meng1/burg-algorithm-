@@ -8,7 +8,7 @@ classdef Alakazam < handle
     % Author(s): M.Span, University of Groningen,
     % dept. Experimental Psychology
     
-    properties (Transient = false)
+    properties (Transient = true)
         ToolGroup
         Figures
         Workspace
@@ -38,7 +38,7 @@ classdef Alakazam < handle
             this.ToolGroup.open;
             
             % left-to-right document layout
-            MD = com.mathworks.mlservices.MatlabDesktopServices.getDesktop;
+            MD = com.mathworks.mlservices.MatlabDesktopServices.getDesktop; %#ok<JAPIMATHWORKS>
             MD.setDocumentArrangement(this.ToolGroup.Name, MD.TILED, java.awt.Dimension(1,1));
             
             this.Workspace = WorkSpace(this);
@@ -277,7 +277,7 @@ classdef Alakazam < handle
                     % One way or the other: load and display the data.
                     try
                         id = Tree.SelectedNodes.Name;
-                    catch e
+                    catch 
                         return
                     end
                     matfilename = Tree.SelectedNodes.UserData;
