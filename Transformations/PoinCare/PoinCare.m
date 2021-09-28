@@ -74,7 +74,7 @@ if strcmp(options.bylabel, 'no')
     sd1 = round((sqrt(2)/2.0) * std(ibix-ibiy),3);
     sd2 = round( sqrt(2*std(ibix)^2) - (.5*std(ibix-ibiy)^2),3);
     
-    plot(pax, ibix, ibiy, '.r');
+    plot(pax, ibix, ibiy, ['r' type]);
     if strcmp(options.origin, 'yes')
         a=xlim;
         xlim([0 a(2)])
