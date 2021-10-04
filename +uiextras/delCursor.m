@@ -10,7 +10,9 @@ id = get(vl, 'UserData');
 evalin('base', ['ans.Workspace.EEG.IBIevent.RTopTime(' num2str(id) ') = []']);
 evalin('base', ['ans.Workspace.EEG.IBIevent.RTopVal(' num2str(id) ') = []']);
 evalin('base', ['ans.Workspace.EEG.IBIevent.ibis(' num2str(id) ') = []']);
-%evalin('base', 'plotCurrent(ALAKAZAM);');
+evalin('base', "ans.Workspace.EEG.File = 'Edited'");
+evalin('base', "ans.Workspace.EEG.id = 'Edited'");
+evalin('base', 'plotCurrent(ans);');
 delete(vl)
 
 end

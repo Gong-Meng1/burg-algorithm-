@@ -218,7 +218,8 @@ if length(EEG) > 1
                         channame2 = { tmpchanlocs.labels };
                         if length(intersect(channame1, channame2)) ~= length(channame1), res = 'no'; end
                     end
-                else res = 'no';
+                else 
+                    res = 'no';
                 end
                 
                 % Field 'datachan in 'urchanlocs' is removed, if exist
@@ -226,25 +227,8 @@ if length(EEG) > 1
                         [EEG.urchanlocs] = deal(rmfield([EEG.urchanlocs], 'datachan'));
                 end           
                 return;
-                
-            case 'icaconsist'  % test ICA decomposition consistency
-                % ----------------------------------
-                res = 'yes';
-                anyempty    = unique_bc( cellfun( 'isempty', { EEG.icaweights }) );
-                if length(anyempty) == 1 && anyempty(1) == 0
-                    ica1 = EEG(1).icawinv;
-                    for i = 2:length(EEG)
-                        if ~isequal(EEG(1).icawinv, EEG(i).icawinv)
-                            res = 'no';
-                        end
-                    end
-                else res = 'no';
-                end
-                return;
-                
         end
-    end
-    
+    end   
 end
 
 % reading these option take time because
@@ -651,7 +635,7 @@ for inddataset = 1:length(ALLEEG)
     
     % check name consistency
     % ----------------------
-    if ~isempty(EEG.setname)
+    if isfield(EEG, 'setname') && ~isempty(EEG.setname)
         if ~ischar(EEG.setname)
             EEG.setname = '';
         else
@@ -733,9 +717,6 @@ for inddataset = 1:length(ALLEEG)
     % ----------------
     if isnumeric(EEG.data)
         v = version;
-        EEG.icawinv    = double(EEG.icawinv); % required for dipole fitting, otherwise it crashes
-        EEG.icaweights = double(EEG.icaweights);
-        EEG.icasphere  = double(EEG.icasphere);
         if ~isempty(findstr(v, 'R11')) || ~isempty(findstr(v, 'R12')) || ~isempty(findstr(v, 'R13'))
             EEG.data       = double(EEG.data);
             EEG.icaact     = double(EEG.icaact);
@@ -743,7 +724,6 @@ for inddataset = 1:length(ALLEEG)
             try,
                 if isa(EEG.data, 'double') && option_single
                     EEG.data       = single(EEG.data);
-                    EEG.icaact     = single(EEG.icaact);
                 end
             catch,
                 disp('WARNING: EEGLAB ran out of memory while converting dataset to single precision.');
@@ -900,122 +880,6 @@ for inddataset = 1:length(ALLEEG)
         EEG.epoch = [];
     end
     
-    % check ica
-    % ---------
-    if ~isfield(EEG, 'icachansind')
-        if isempty(EEG.icaweights)
-            EEG.icachansind = []; res = com;
-        else
-            EEG.icachansind = [1:EEG.nbchan]; res = com;
-        end
-    elseif isempty(EEG.icachansind)
-        if isempty(EEG.icaweights)
-            EEG.icachansind = []; res = com;
-        else
-            EEG.icachansind = [1:EEG.nbchan]; res = com;
-        end
-    end
-    if ~isempty(EEG.icasphere)
-        if ~isempty(EEG.icaweights)
-            if size(EEG.icaweights,2) ~= size(EEG.icasphere,1)
-                if popask( [ 'eeg_checkset error: number of columns in weights array (' int2str(size(EEG.icaweights,2)) ')' 10 ...
-                        'does not match the number of rows in the sphere array (' int2str(size(EEG.icasphere,1)) ')' 10 ...
-                        'Should EEGLAB remove ICA information ?' 10 '(press Cancel to fix the problem from the commandline)'])
-                    res = com;
-                    EEG.icasphere = [];
-                    EEG.icaweights = [];
-                    EEG = eeg_checkset(EEG);
-                    return;
-                else
-                    error('eeg_checkset error: user abort');
-                    res = com;
-                    return;
-                    %error('eeg_checkset error: invalid weight and sphere array sizes');
-                end
-            end
-            if isnumeric(EEG.data)
-                if length(EEG.icachansind) ~= size(EEG.icasphere,2)
-                    if popask( [ 'eeg_checkset error: number of elements in ''icachansind'' (' int2str(length(EEG.icachansind)) ')' 10 ...
-                            'does not match the number of columns in the sphere array (' int2str(size(EEG.icasphere,2)) ')' 10 ...
-                            'Should EEGLAB remove ICA information ?' 10 '(press Cancel to fix the problem from the commandline)'])
-                        res = com;
-                        EEG.icasphere = [];
-                        EEG.icaweights = [];
-                        EEG = eeg_checkset(EEG);
-                        return;
-                    else
-                        error('eeg_checkset error: user abort');
-                        res = com;
-                        return;
-                        %error('eeg_checkset error: invalid weight and sphere array sizes');
-                    end
-                end
-                if isempty(EEG.icaact) || (size(EEG.icaact,1) ~= size(EEG.icaweights,1)) || (size(EEG.icaact,2) ~= size(EEG.data,2))
-                    EEG.icaweights = double(EEG.icaweights);
-                    EEG.icawinv = double(EEG.icawinv);
-                    
-                    % scale ICA components to RMS microvolt
-                    if option_scaleicarms
-                        if ~isempty(EEG.icawinv)
-                            if mean(mean(abs(pinv(EEG.icaweights * EEG.icasphere)-EEG.icawinv))) < 0.0001
-                                disp('Scaling components to RMS microvolt');
-                                scaling = repmat(sqrt(mean(EEG(1).icawinv(:,:).^2))', [1 size(EEG.icaweights,2)]);
-                                EEG.etc.icaweights_beforerms = EEG.icaweights;
-                                EEG.etc.icasphere_beforerms = EEG.icasphere;
-                                
-                                EEG.icaweights = EEG.icaweights .* scaling;
-                                EEG.icawinv = pinv(EEG.icaweights * EEG.icasphere);
-                            end
-                        end
-                    end
-                    
-                    if ~isempty(EEG.data) && option_computeica
-                        fprintf('eeg_checkset: recomputing the ICA activation matrix ...\n');
-                        res = com;
-                        % Make compatible with Matlab 7
-                        if any(isnan(EEG.data(:)))
-                            tmpdata = EEG.data(EEG.icachansind,:);
-                            fprintf('eeg_checkset: recomputing ICA ignoring NaN indices ...\n');
-                            tmpindices = find(~sum(isnan(tmpdata))); % was: tmpindices = find(~isnan(EEG.data(1,:)));
-                            EEG.icaact = zeros(size(EEG.icaweights,1), size(tmpdata,2)); EEG.icaact(:) = NaN;
-                            EEG.icaact(:,tmpindices) = (EEG.icaweights*EEG.icasphere)*tmpdata(:,tmpindices);
-                        else
-                            EEG.icaact = (EEG.icaweights*EEG.icasphere)*EEG.data(EEG.icachansind,:); % automatically does single or double
-                        end
-                        EEG.icaact    = reshape( EEG.icaact, size(EEG.icaact,1), EEG.pnts, EEG.trials);
-                    end
-                end
-            end
-            if isempty(EEG.icawinv)
-                EEG.icawinv = pinv(EEG.icaweights*EEG.icasphere); % a priori same result as inv
-                res         = com;
-            end
-        else
-            disp( [ 'eeg_checkset warning: weights matrix cannot be empty if sphere matrix is not, correcting ...' ]);
-            res = com;
-            EEG.icasphere = [];
-        end
-        if option_computeica
-            if ~isempty(EEG.icaact) && ndims(EEG.icaact) < 3 && (EEG.trials > 1)
-                disp( [ 'eeg_checkset note: independent component made 3-D' ]);
-                res = com;
-                EEG.icaact = reshape(EEG.icaact, size(EEG.icaact,1), EEG.pnts, EEG.trials);
-            end
-        else
-            if ~isempty(EEG.icaact)
-                fprintf('eeg_checkset: removing ICA activation matrix (as per edit options) ...\n');
-            end
-            EEG.icaact     = [];
-        end
-    else
-        if ~isempty( EEG.icaweights ), EEG.icaweights = []; res = com; end
-        if ~isempty( EEG.icawinv ),    EEG.icawinv = []; res = com; end
-        if ~isempty( EEG.icaact ),     EEG.icaact = []; res = com; end
-    end
-    if isempty(EEG.icaact)
-        EEG.icaact = [];
-    end
-    
     % -------------
     % check chanlocs
     % -------------
@@ -1115,7 +979,6 @@ for inddataset = 1:length(ALLEEG)
         end
         
     end
-    EEG.chaninfo.icachansind = EEG.icachansind; % just a copy for programming convinience
     
     %if ~isfield(EEG, 'urchanlocs')
     %    EEG.urchanlocs = EEG.chanlocs;
@@ -1284,9 +1147,6 @@ for inddataset = 1:length(ALLEEG)
     if ~isfield(EEG.reject, 'threshkurtact')  EEG.reject.threshkurtact = 600; res = com; end
     if ~isfield(EEG.reject, 'threshkurtdist') EEG.reject.threshkurtdist = 600; res = com; end
     if ~isfield(EEG.reject, 'gcompreject')    EEG.reject.gcompreject = []; res = com; end
-    if length(EEG.reject.gcompreject) ~= size(EEG.icaweights,1)
-        EEG.reject.gcompreject = zeros(1, size(EEG.icaweights,1));
-    end
     
     % remove old fields
     % -----------------

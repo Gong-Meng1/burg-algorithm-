@@ -82,7 +82,7 @@ parser.addParameter('Parent'             , 0           , @(x)isscalar(x) && isgr
 parser.addParameter('Units'              , 'normalized', @(x)any(validatestring(x,{'pixels','normalized','inches','centimeters','points','characters'})))
 parser.addParameter('Position'           , [0,0,1,1]   , @(x)validateattributes(x,{'double'},{'real','finite','nonnegative', 'size',[1 4]}))
 parser.addParameter('ShowIBIS'           , 'auto'      , @(x)any(validatestring(x,{'auto','off'})))
-parser.addParameter('MaxIBIS'            , 75         , @(x)validateattributes(x,{'double'},{'real','finite','positive','scalar'}))
+parser.addParameter('MaxIBIS'            , 175         , @(x)validateattributes(x,{'double'},{'real','finite','positive','scalar'}))
 parser.addParameter('ShowEvents'         , 'auto'      , @(x)any(validatestring(x,{'auto','off'})))
 parser.addParameter('MaxEvents'          , 30          , @(x)validateattributes(x,{'double'},{'real','finite','positive','scalar'}))
 parser.addParameter('MaxAreas'           , 10          , @(x)validateattributes(x,{'double'},{'real','finite','positive','scalar'}))
@@ -739,6 +739,8 @@ YData = bsxfun(@minus,YData,signalMed);
 overlap = YData;
 overlap = min(overlap(:,1:end-1),[],1) - max(overlap(:,2:end),[],1);
 overlap(isnan(overlap)) = 0;
+overlap(isinf(overlap)) = 100000;
+
 signalSpacing = -overlap*1.01;
 % Increas very small spacings
 signalSpacing = max(signalSpacing, max(signalSpacing)./1000.*ones(size(signalSpacing)));

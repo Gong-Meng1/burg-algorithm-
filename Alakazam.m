@@ -134,6 +134,7 @@ classdef Alakazam < handle
         end
         
         function plotCurrent(this)
+            
             f = findobj('Type', 'Figure','Tag', this.Workspace.EEG.File);
             if ~isempty(f)
                 % then just show it
