@@ -1,1 +1,1 @@
-{"Name":"IBI Plot","Description":"Create a 3-D histogram of the IBI series","Entry":"ibiplot.m","Icon":"ibiplot.png","Section":"Plots","Category":"ECG"}
+{"Name":"ibiplot","Description":"Create a 3-D histogram of the IBI series","Entry":"ibiplot.m","Icon":"ibiplot.png","Section":"Plots","Category":"ECG"}

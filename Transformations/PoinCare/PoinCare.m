@@ -1,9 +1,10 @@
 function [pfigure, options] = PoinCare(input,opts)
-%% Example Transformation simply calling EEGLAB function
-% Create a poincare plot for the IBI series
+%% Create a poincare plot for the IBI series
 % The ibis are plotted agains a time-delayed version of the same values. If
 % the 'bylabel' option is used, the plot has different partitions for each
 % value the label takes on.
+
+%#ok<*AGROW> 
 
 %% Check for the EEG dataset input:
 if (nargin < 1)
@@ -67,36 +68,49 @@ end
 pax = axes(pfigure);
 
 if strcmp(options.bylabel, 'no')
-
+    %% This is the plot when no labels are used.
     ibix = input.IBIevent.ibis(1:end-options.delta);
     ibiy = input.IBIevent.ibis(1+options.delta:end);
     
     sd1 = round((sqrt(2)/2.0) * std(ibix-ibiy),3);
     sd2 = round( sqrt(2*std(ibix)^2) - (.5*std(ibix-ibiy)^2),3);
-    
-    SD1 = std(ibix+ibiy);
-    SD2 = std(ibix-ibiy);
+
     plot(pax, ibix, ibiy, ['r' type]);
+
     if strcmp(options.origin, 'yes')
         a=xlim;
         xlim([0 a(2)])
         ylim([0 a(2)])
     end
     hold on
-    plot (xlim, ylim, ':b', 'LineWidth', 2);
+    plot (pax, xlim, ylim, ':b', 'LineWidth', 2);
+    xlabel("IBI_(_t_)");
+    ylabel("IBI_(_t_+_1_)");
+
     axis square;
-    title(input.id);
+    title(pax, input.id); 
+    grid minor;
+    % make it into a subplot:
+    subplot(1,2,1,pax);
     
-    sd1text = text(min(xlim)+.01*diff(xlim), .99*max(ylim), ['SD1 = ' num2str(sd1) ' s'], 'Units', 'data');
-    sd2text = text(min(xlim)+.01*diff(xlim), .97*max(ylim), ['SD2 = ' num2str(sd2) ' s'], 'Units', 'data');
-    
-    s1 = get(sd1text, 'Extent');
-    s2 = get(sd2text, 'Extent');
-    
-    text(max(s1(1)+s1(3),s2(1)+s2(3)), .98*max(ylim), ['SD2/SD1 = ' num2str(sd2/sd1)], 'Units', 'data');
-    
+    %% create the info plot with the parameters
+    anax = subplot(1,2,2);
+    pars = {"     SD1 = " + num2str(sd1) + " s"};
+    pars{end+1} = "     SD2 = " + num2str(sd2) + " s";
+    pars{end+1} = "     SD2/SD1 = " + num2str(round(sd2/sd1,2));
+
+    plot(anax, 0);
+    set(anax, 'XTick', [], 'YTick', [], 'Box', 'off',...
+        'Color', [.98 .98 .98], ...
+        'XColor', 'none', 'YColor', 'none');
+    anax.Toolbar.Visible = 'off';
+    axis square;
+
+    title('Parameters:', 'Poincare')
+    set(anax,'TitleHorizontalAlignment', 'left');
+    text(0,1,pars, 'VerticalAlignment', 'top');
 else
-    
+    %% Same plot, but now for each of the levels of the selected label.
     ibix = input.IBIevent.ibis(1:end-options.delta)';
     ibiy = input.IBIevent.ibis(1+options.delta:end)';
     ibit = input.IBIevent.RTopTime(1:end-1-options.delta)';
@@ -104,11 +118,11 @@ else
     events = input.urevent;
     idx = strcmp({events(:).code}, options.label);
     events = events(idx);
-    
+    %% Create a table with values for each of the the levels.
     out = table(ibit,ibix, ibiy);
     for ev = events
         if ~ismember(matlab.lang.makeValidName(ev.code), out.Properties.VariableNames)
-            out = [out table(cell(length(ibix),1))]; %#ok<AGROW>
+            out = [out table(cell(length(ibix),1))]; 
             for i = 1:length(ibix)
                 out(i,end) = {'UnLabeled'};
             end
@@ -120,32 +134,57 @@ else
         d((ibit>tstart) & (ibit<tend)) = {ev.type};
         out.(matlab.lang.makeValidName(ev.code)) = d;
     end
-    
-    
+        
     labels = table2cell(unique(out(:,end)));
     for i = 1:length(labels)
-        p=labels(i);
-        ix = out.ibix(strcmpi(table2cell(out(:,end)), p));
-        iy = out.ibiy(strcmpi(table2cell(out(:,end)), p));
-        
+        ix = out.ibix(strcmpi(table2cell(out(:,end)), labels(i)));
+        iy = out.ibiy(strcmpi(table2cell(out(:,end)), labels(i)));
+        %% this is the 'subplot' per label:
         plot(pax, ix, iy, type, 'MarkerSize', 8);
         hold on
-        sd1(i) = round( (sqrt(2)/2.0) * std(ix-iy), 3); %#ok<AGROW>
-        sd2(i) = round( sqrt(2*std(ix)^2 ) - (.5*std(ix-iy)^2),3); %#ok<AGROW>
+        %calculate the parameters for the infopanes...
+        sd1(i) = round( (sqrt(2)/2.0) * std(ix-iy), 3); 
+        sd2(i) = round( sqrt(2*std(ix)^2 ) - (.5*std(ix-iy)^2),3); 
     end
+
     hold on
+    %% draw zoomed in to the dots, of from the origin?
     if strcmp(options.origin, 'yes')
         a=xlim;
         xlim([0 a(2)])
         ylim([0 a(2)])
     end
-    for i = 1:length(labels)
-        labels(i) = {[char(labels(i)) ' (sd1= '  num2str(sd1(i)) ' sd2= '  num2str(sd2(i)) ')']}; 
-    end
+
+    xlabel("IBI_(_t_)");
+    ylabel("IBI_(_t_+_1_)");
+
+    axis square;
+    title(pax, input.id); 
     plot (pax, xlim, ylim, ':r', 'LineWidth', 2);
-    axis(pax, 'square')
-    title(pax, input.id);
-    grid minor
+    grid minor;
+    % make it into a subplot:
+    subplot(1,2,1,pax);
+    %% create the info plot with the parameters
+    anax = subplot(1,2,2);
+    plot(anax, 0);
+    set(anax, 'XTick', [], 'YTick', [], 'Box', 'off',...
+        'Color', [.98 .98 .98], ...
+        'XColor', 'none', 'YColor', 'none');
+
+    anax.Toolbar.Visible = 'off';
+    axis square;
+    set(anax,'TitleHorizontalAlignment', 'left');
+    title('Parameters:', 'Poincare')
+    pars = {};
+    for i = 1:length(labels)
+        %labels(i) = {[char(labels(i)) ' (sd1= '  num2str(sd1(i)) ' sd2= '  num2str(sd2(i)) ')']};
+        pars{end+1} = char(labels(i));
+        pars{end+1} = "     SD1 = " + num2str(sd1(i)) + " s"; 
+        pars{end+1} = "     SD2 = " + num2str(sd2(i)) + " s";
+        pars{end+1} = "     SD2/SD1 = " + num2str(round(sd2(i)/sd1(i),2));
+    end        
+    text(0,1,pars, 'VerticalAlignment', 'top');
+
     legend(pax,labels, 'Location', 'southeast');         
 end
 %% could make some sliders/buttons here (to the side?) that interact with the poincare.
