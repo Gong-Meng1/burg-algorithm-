@@ -4,7 +4,7 @@ function [pfigure, options] = PoinCare(input,opts)
 % the 'bylabel' option is used, the plot has different partitions for each
 % value the label takes on.
 
-%#ok<*AGROW> 
+%#ok<*AGROW>
 
 %% Check for the EEG dataset input:
 if (nargin < 1)
@@ -45,16 +45,16 @@ end
 
 %% simplest option....
 if strcmp(options, 'Init')
-options = uiextras.settingsdlg(...
-    'Description', 'Set the parameters for PoinCare Plot',...
-    'title' , 'PoinCare options',...
-    'separator' , 'Plot Parameters:',...
-    {'Delta' ;'delta' }, 1,...
-    {'Origin included'; 'origin'}, {'yes', 'no'},...
-    {'Dots or Lines?'; 'type'}, {'dots','lines', 'both'},...
-    'separator' , 'Use Labels:',...
-    {'By Label' ;'bylabel' }, {'no', 'yes'}, ...
-    {'Use:'; 'label'}, ev);
+    options = uiextras.settingsdlg(...
+        'Description', 'Set the parameters for PoinCare Plot',...
+        'title' , 'PoinCare options',...
+        'separator' , 'Plot Parameters:',...
+        {'Delta' ;'delta' }, 1,...
+        {'Origin included'; 'origin'}, {'yes', 'no'},...
+        {'Dots or Lines?'; 'type'}, {'dots','lines', 'both'},...
+        'separator' , 'Use Labels:',...
+        {'By Label' ;'bylabel' }, {'no', 'yes'}, ...
+        {'Use:'; 'label'}, ev);
 end
 
 if strcmp(options.type, 'lines')
@@ -71,7 +71,7 @@ if strcmp(options.bylabel, 'no')
     %% This is the plot when no labels are used.
     ibix = input.IBIevent.ibis(1:end-options.delta);
     ibiy = input.IBIevent.ibis(1+options.delta:end);
-    
+
     sd1 = round((sqrt(2)/2.0) * std(ibix-ibiy),3);
     sd2 = round( sqrt(2*std(ibix)^2) - (.5*std(ibix-ibiy)^2),3);
 
@@ -88,11 +88,13 @@ if strcmp(options.bylabel, 'no')
     ylabel("IBI_(_t_+_1_)");
 
     axis square;
-    title(pax, input.id); 
+    title(pax, input.id);
     grid minor;
+    plot_ellipse(2*sd1,2*sd2,mean(ibix), mean(ibiy), 45, [0 0 .5]);
+
     % make it into a subplot:
     subplot(1,2,1,pax);
-    
+
     %% create the info plot with the parameters
     anax = subplot(1,2,2);
     pars = {"     SD1 = " + num2str(sd1) + " s"};
@@ -105,7 +107,6 @@ if strcmp(options.bylabel, 'no')
         'XColor', 'none', 'YColor', 'none');
     anax.Toolbar.Visible = 'off';
     axis square;
-
     title('Parameters:', 'Poincare')
     set(anax,'TitleHorizontalAlignment', 'left');
     text(0,1,pars, 'VerticalAlignment', 'top');
@@ -114,7 +115,7 @@ else
     ibix = input.IBIevent.ibis(1:end-options.delta)';
     ibiy = input.IBIevent.ibis(1+options.delta:end)';
     ibit = input.IBIevent.RTopTime(1:end-1-options.delta)';
-    
+
     events = input.event;
     idx = strcmp({events(:).code}, options.label);
     events = events(idx);
@@ -122,7 +123,7 @@ else
     out = table(ibit,ibix, ibiy);
     for ev = events
         if ~ismember(matlab.lang.makeValidName(ev.code), out.Properties.VariableNames)
-            out = [out table(cell(length(ibix),1))]; 
+            out = [out table(cell(length(ibix),1))];
             for i = 1:length(ibix)
                 out(i,end) = {'No label'};
             end
@@ -134,7 +135,7 @@ else
         d((ibit>tstart) & (ibit<tend)) = {ev.type};
         out.(matlab.lang.makeValidName(ev.code)) = d;
     end
-        
+
     labels = table2cell(unique(out(:,end)));
     for i = 1:length(labels)
         ix = out.ibix(strcmpi(table2cell(out(:,end)), labels(i)));
@@ -143,11 +144,11 @@ else
         plot(pax, ix, iy, type, 'MarkerSize', 8);
         hold on
         %calculate the parameters for the infopanes...
-        sd1(i) = round( (sqrt(2)/2.0) * std(ix-iy), 3); 
-        sd2(i) = round( sqrt(2*std(ix)^2 ) - (.5*std(ix-iy)^2),3); 
+        sd1(i) = round( (sqrt(2)/2.0) * std(ix-iy), 3);
+        sd2(i) = round( sqrt(2*std(ix)^2 ) - (.5*std(ix-iy)^2),3);
+        plot_ellipse(2*sd1(i),2*sd2(i),mean(ibix), mean(ibiy), 45, [i/10 i/7 .5]);
     end
 
-    hold on
     %% draw zoomed in to the dots, of from the origin?
     if strcmp(options.origin, 'yes')
         a=xlim;
@@ -159,7 +160,7 @@ else
     ylabel("IBI_(_t_+_1_)");
 
     axis square;
-    title(pax, input.id); 
+    title(pax, input.id);
     plot (pax, xlim, ylim, ':r', 'LineWidth', 2);
     grid minor;
     % make it into a subplot:
@@ -175,18 +176,41 @@ else
     axis square;
     set(anax,'TitleHorizontalAlignment', 'left');
     title('Parameters:', 'Poincare')
-    
+
     pars = {};
     for i = 1:length(labels)
         %labels(i) = {[char(labels(i)) ' (sd1= '  num2str(sd1(i)) ' sd2= '  num2str(sd2(i)) ')']};
         pars{end+1} = char(labels(i));
-        pars{end+1} = "     SD1 = " + num2str(sd1(i)) + " s"; 
+        pars{end+1} = "     SD1 = " + num2str(sd1(i)) + " s";
         pars{end+1} = "     SD2 = " + num2str(sd2(i)) + " s";
         pars{end+1} = "     SD2/SD1 = " + num2str(round(sd2(i)/sd1(i),2));
-    end        
+    end
     text(0,1,pars, 'VerticalAlignment', 'top');
+    legend(pax, labels, 'Location', 'southeast');
 
-    legend(pax,labels, 'Location', 'southeast');         
 end
-%% could make some sliders/buttons here (to the side?) that interact with the poincare.
+end
+
+function h=plot_ellipse(a,b,cx,cy,angle,color)
+%a: width in pixels
+%b: height in pixels
+%cx: horizontal center
+%cy: vertical center
+%angle: orientation ellipse in degrees
+%color: color code (e.g., 'r' or [0.4 0.5 0.1])
+
+angle=angle/180*pi;
+
+r=0:0.1:2*pi+0.1;
+p=[(a*cos(r))' (b*sin(r))'];
+
+alpha=[cos(angle) -sin(angle)
+       sin(angle) cos(angle)];
+   
+p1=p*alpha;
+ 
+h = patch(cx+p1(:,1),cy+p1(:,2),color,'EdgeColor',color);
+h.FaceAlpha = .3;
+ 
+end
 
