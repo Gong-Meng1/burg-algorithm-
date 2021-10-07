@@ -15,22 +15,27 @@ function open(this,~,~)
 
     fileList = dir (strcat(this.RawDirectory, '*.mat'));
     for file = 1:length(fileList)
+        disp(fileList(file).name);
         this.loadMATFile(this, fileList(file).name)
     end
     fileList = dir (strcat(this.RawDirectory, '*.vhdr'));
     for file = 1:length(fileList)
+        disp(fileList(file).name);
         this.loadBVAFile(this, fileList(file).name)
     end
     fileList = dir (strcat(this.RawDirectory, '*.XDF'));
     for file = 1:length(fileList)
+        disp(fileList(file).name);
         this.loadXDFFile(this, fileList(file).name)
     end
     fileList = dir (strcat(this.RawDirectory, '*.EDF'));
     for file = 1:length(fileList)       
+        disp(fileList(file).name);
         this.loadEDFFile(this, fileList(file).name)       
     end
-        fileList = dir (strcat(this.RawDirectory, '*.BLE'));
+    fileList = dir (strcat(this.RawDirectory, '*.BLE'));
     for file = 1:length(fileList)
+        disp(fileList(file).name);
         this.loadCortriumFile(this, fileList(file).name)
     end
 end

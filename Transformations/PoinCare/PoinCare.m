@@ -39,8 +39,8 @@ pfigure = figure('NumberTitle', 'off', 'Name', 'PoinCare','Tag', input.File, ...
 
 ev = [];
 
-if isfield(input, 'urevent') && isfield(input.urevent, 'code') && ~isempty({input.urevent.code})
-    ev = unique({input.urevent.code});
+if isfield(input, 'event') && isfield(input.event, 'code') && ~isempty({input.event.code})
+    ev = unique({input.event.code});
 end
 
 %% simplest option....
@@ -115,7 +115,7 @@ else
     ibiy = input.IBIevent.ibis(1+options.delta:end)';
     ibit = input.IBIevent.RTopTime(1:end-1-options.delta)';
     
-    events = input.urevent;
+    events = input.event;
     idx = strcmp({events(:).code}, options.label);
     events = events(idx);
     %% Create a table with values for each of the the levels.
@@ -124,7 +124,7 @@ else
         if ~ismember(matlab.lang.makeValidName(ev.code), out.Properties.VariableNames)
             out = [out table(cell(length(ibix),1))]; 
             for i = 1:length(ibix)
-                out(i,end) = {'UnLabeled'};
+                out(i,end) = {'No label'};
             end
             out.Properties.VariableNames(end) = {matlab.lang.makeValidName(ev.code)};
         end
@@ -175,6 +175,7 @@ else
     axis square;
     set(anax,'TitleHorizontalAlignment', 'left');
     title('Parameters:', 'Poincare')
+    
     pars = {};
     for i = 1:length(labels)
         %labels(i) = {[char(labels(i)) ' (sd1= '  num2str(sd1(i)) ' sd2= '  num2str(sd2(i)) ')']};

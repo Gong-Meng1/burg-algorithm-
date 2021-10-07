@@ -20,11 +20,11 @@ function lss = EEG2labeledSignalSet(EEG)
 % for now. If a dataset has been translated back, ROI's are availeable
 % also.
 
-    if ~isfield(EEG, 'urevent')
+    if ~isfield(EEG, 'event')
         return
     end
     
-    Events = EEG.urevent;
+    Events = EEG.event;
     
     if ~isfield(Events, 'code')
         return
@@ -47,6 +47,9 @@ function [loc, vals, endloc] = addLabels(lss,labelVar, eventList)
         endloc = lss.Source{1}.Time([eventList.duration]+0+[eventList.latency]);
         vals = {eventList.type};
     else
+        if isnan(eventList.duration)
+            eventList.duration = 1;
+        end
         loc = lss.Source{1}.Time(eventList.latency);
         endloc = lss.Source{1}.Time(eventList.duration+eventList.latency);
         vals = string(eventList.type);
@@ -65,6 +68,6 @@ function SignalLabelDefinition = CreateLabelDefinition(code)
           'LabelType','roi',...
           'LabelDataType','string',...
           'RoiLimitsDataType', 'duration',...
-          'Description','Created from urevent');
+          'Description','Created from event');
 end
 

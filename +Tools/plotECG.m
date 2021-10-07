@@ -85,7 +85,7 @@ parser.addParameter('ShowIBIS'           , 'auto'      , @(x)any(validatestring(
 parser.addParameter('MaxIBIS'            , 175         , @(x)validateattributes(x,{'double'},{'real','finite','positive','scalar'}))
 parser.addParameter('ShowEvents'         , 'auto'      , @(x)any(validatestring(x,{'auto','off'})))
 parser.addParameter('MaxEvents'          , 30          , @(x)validateattributes(x,{'double'},{'real','finite','positive','scalar'}))
-parser.addParameter('MaxAreas'           , 10          , @(x)validateattributes(x,{'double'},{'real','finite','positive','scalar'}))
+parser.addParameter('MaxAreas'           , 20          , @(x)validateattributes(x,{'double'},{'real','finite','positive','scalar'}))
 
 parser.parse(args{:})
 
@@ -107,21 +107,21 @@ if ~strcmp(parser.Results.ShowIBIS, 'off')
 end
 
 if ~strcmp(parser.Results.ShowEvents, 'off')
-    if ( isfield(SIG, 'EEG') && isfield(SIG.EEG, 'urevent') && ~isempty(SIG.EEG.urevent))
-        evlati = [SIG.EEG.urevent.latency];
-        evdur = [SIG.EEG.urevent.duration];
+    if ( isfield(SIG, 'EEG') && isfield(SIG.EEG, 'event') && ~isempty(SIG.EEG.event))
+        evlati = [SIG.EEG.event.latency];
+        evdur = [SIG.EEG.event.duration];
         evlati = evlati(evdur < 1); % only events with a duration of 1: events
-        evtypes = {SIG.EEG.urevent.type};
+        evtypes = {SIG.EEG.event.type};
         
         SIG.EventLabel = evtypes(evdur < 1);
         SIG.EventTime = SIG.EEG.times(evlati);
         
-        evlati = [SIG.EEG.urevent.latency];
-        evdur = [SIG.EEG.urevent.duration];
+        evlati = [SIG.EEG.event.latency];
+        evdur = [SIG.EEG.event.duration];
         evlati = evlati(evdur > 0); % only events with longer: "Labels" or "Areas".
         
-        evtypes = {SIG.EEG.urevent.type};
-        evlab   = {SIG.EEG.urevent.code};
+        evtypes = {SIG.EEG.event.type};
+        evlab   = {SIG.EEG.event.code};
         
         SIG.AreaEventLabel = strcat(evlab(evdur > 0) + " - " + evtypes(evdur > 0));
         SIG.AreaEventTime  = SIG.EEG.times(evlati);
@@ -438,8 +438,8 @@ hs.panel.Visible = 'on';
         
         prevIBI = findobj(hs.ax, 'Tag', 'ibi');
         delete(prevIBI);
-        prevUrevent = findobj(hs.ax, 'Tag', 'urevent');
-        delete(prevUrevent);
+        prevevent = findobj(hs.ax, 'Tag', 'event');
+        delete(prevevent);
         
         %% plot the ibis: red cursor
         if ~strcmp(SIG.ShowIBIS, 'off')
@@ -480,7 +480,7 @@ hs.panel.Visible = 'on';
                         'LabelHorizontalAlignment', 'center',...
                         'LabelOrientation', 'horizontal', ...
                         'FontSize', 8, ...
-                        'Tag', 'urevent',...
+                        'Tag', 'event',...
                         'UserData', rt);
                     % ,... 
                 end
@@ -508,7 +508,7 @@ hs.panel.Visible = 'on';
                         'EdgeColor', [.1 .8 .5], ...
                         'FaceAlpha', .15, ...
                         'EdgeAlpha', .25, ...
-                        'Tag', 'urevent',...
+                        'Tag', 'event',...
                         'UserData', rt);
 %                         'LineStyle', ':', ...
 %                         'Label',  , ...

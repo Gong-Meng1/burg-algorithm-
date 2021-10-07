@@ -13,19 +13,19 @@ end
 codes = getLabelNames(EEG.lss);
 vals = getLabelValues(EEG.lss);
 
-urevent = [];
+event = [];
 bvindex = 1;
 for e = 1:length(codes)
     for i = 1:height(vals.(codes(e)){:,:})
         val = vals.(codes(e)){1}.ROILimits(i,1:2)*EEG.srate;
-        urevent(end+1).latency = round((val(1))+1); %#ok<AGROW>
-        urevent(end).duration = round(val(2)-val(1)); %this is weird....
-        urevent(end).channel = 0;
-        urevent(end).bvtime = 0;
-        urevent(end).bvmknum = bvindex; bvindex = bvindex + 1;
-        urevent(end).type = char(vals.(codes(e)){1,1}.Value(i));
-        urevent(end).code = char(codes(e));
+        event(end+1).latency = round((val(1))+1); %#ok<AGROW>
+        event(end).duration = round(val(2)-val(1)); %this is weird....
+        event(end).channel = 0;
+        event(end).bvtime = 0;
+        event(end).bvmknum = bvindex; bvindex = bvindex + 1;
+        event(end).type = char(vals.(codes(e)){1,1}.Value(i));
+        event(end).code = char(codes(e));
     end
 end
-EEG.urevent = urevent;
+EEG.event = event;
 end
