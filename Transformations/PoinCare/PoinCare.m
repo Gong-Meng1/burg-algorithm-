@@ -50,10 +50,12 @@ if strcmp(options, 'Init')
         'title' , 'PoinCare options',...
         'separator' , 'Plot Parameters:',...
         {'Delta' ;'delta' }, 1,...
-        {'Origin included'; 'origin'}, {'yes', 'no'},...
+        {'Origin included'; 'origin'}, [true, false],...
         {'Dots or Lines?'; 'type'}, {'dots','lines', 'both'},...
+        'separator' , 'Ellipses:',...
+        {'Plot Ellipses' ;'ell' }, [true, false], ...
         'separator' , 'Use Labels:',...
-        {'By Label' ;'bylabel' }, {'no', 'yes'}, ...
+        {'By Label' ;'bylabel' }, [true, false], ...
         {'Use:'; 'label'}, ev);
 end
 
@@ -67,7 +69,7 @@ end
 
 pax = axes(pfigure);
 
-if strcmp(options.bylabel, 'no')
+if ~options.bylabel
     %% This is the plot when no labels are used.
     ibix = input.IBIevent.ibis(1:end-options.delta);
     ibiy = input.IBIevent.ibis(1+options.delta:end);
@@ -75,22 +77,25 @@ if strcmp(options.bylabel, 'no')
     sd1 = round((sqrt(2)/2.0) * std(ibix-ibiy),3);
     sd2 = round( sqrt(2*std(ibix)^2) - (.5*std(ibix-ibiy)^2),3);
 
-    plot(pax, ibix, ibiy, ['r' type]);
+    h=plot(pax, ibix, ibiy, ['r' type]);
 
-    if strcmp(options.origin, 'yes')
+    if options.origin
         a=xlim;
         xlim([0 a(2)])
         ylim([0 a(2)])
     end
     hold on
-    plot (pax, xlim, ylim, ':b', 'LineWidth', 2);
+    plot (pax, xlim, ylim, ':b', 'LineWidth', 1);
     xlabel("IBI_(_t_)");
     ylabel("IBI_(_t_+_1_)");
 
     axis square;
     title(pax, input.id);
     grid minor;
-    plot_ellipse(2*sd1,2*sd2,mean(ibix), mean(ibiy), 45, [0 0 .5]);
+
+    if options.ell
+        plot_ellipse(2*sd1,2*sd2,mean(ibix), mean(ibiy), 45, get(h,'Color'));
+    end
 
     % make it into a subplot:
     subplot(1,2,1,pax);
@@ -141,16 +146,21 @@ else
         ix = out.ibix(strcmpi(table2cell(out(:,end)), labels(i)));
         iy = out.ibiy(strcmpi(table2cell(out(:,end)), labels(i)));
         %% this is the 'subplot' per label:
-        plot(pax, ix, iy, type, 'MarkerSize', 8);
+        h(i) = plot(pax, ix, iy, type, 'MarkerSize', 8);
         hold on
         %calculate the parameters for the infopanes...
         sd1(i) = round( (sqrt(2)/2.0) * std(ix-iy), 3);
         sd2(i) = round( sqrt(2*std(ix)^2 ) - (.5*std(ix-iy)^2),3);
-        plot_ellipse(2*sd1(i),2*sd2(i),mean(ibix), mean(ibiy), 45, [i/10 i/7 .5]);
+        
     end
-
+   
+    if options.ell
+        for i = 1:length(labels)
+            plot_ellipse(2*sd1(i),2*sd2(i),mean(ibix), mean(ibiy), 45, get(h(i),'Color'));
+        end
+    end
     %% draw zoomed in to the dots, of from the origin?
-    if strcmp(options.origin, 'yes')
+    if options.origin
         a=xlim;
         xlim([0 a(2)])
         ylim([0 a(2)])
@@ -161,7 +171,7 @@ else
 
     axis square;
     title(pax, input.id);
-    plot (pax, xlim, ylim, ':r', 'LineWidth', 2);
+    plot (pax, xlim, ylim, ':r', 'LineWidth', 1);
     grid minor;
     % make it into a subplot:
     subplot(1,2,1,pax);

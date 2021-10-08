@@ -60,7 +60,7 @@ catch ME
 end
 
 %% Because the eventtimes for the r-top are interpolated they do not fit 
-%% the urevent structure. We keep them separated
+%% the event structure. We keep them separated
 
 EEGstruct.IBIevent.RTopTime = ecgTimestamps(locs) + correction;
 EEGstruct.IBIevent.RTopVal = ecgData(locs);
