@@ -220,7 +220,7 @@ alpha=[cos(angle) -sin(angle)
 p1=p*alpha;
  
 h = patch(cx+p1(:,1),cy+p1(:,2),color,'EdgeColor',color);
-h.FaceAlpha = .3;
+h.FaceAlpha = .05;
  
 end
 
