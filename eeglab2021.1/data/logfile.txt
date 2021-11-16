@@ -1,0 +1,12 @@
+Stream cam1 has no time stamps. It cannot be imported.
+Stream WiimoteMarkers1 has no time stamps. It cannot be imported.
+Stream MouseButtons has no time stamps. It cannot be imported.
+Stream WiimoteMarkers2 has no time stamps. It cannot be imported.
+Stream Keyboard has no time stamps. It cannot be imported.
+Stream cam1 has no time stamps. It cannot be imported.
+Stream WiimoteMarkers1 has no time stamps. It cannot be imported.
+Stream MouseButtons has no time stamps. It cannot be imported.
+Stream WiimoteMarkers2 has no time stamps. It cannot be imported.
+Stream Keyboard has no time stamps. It cannot be imported.
+Wrong structure or missing fields in stream "polarband1_wks023018".
+Wrong structure or missing fields in stream "polarband2_wks023018".

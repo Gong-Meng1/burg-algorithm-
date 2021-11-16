@@ -1,8 +1,9 @@
 function loadXDFFile(this, WS, name)
 %%
-%
-%
-%
+%   Loads the XDF file into an readeable format for Alakazam
+%   Needs the EEGLAB to be in the path, and needs an installed Mobilab
+%   plugin to be activated.....
+%   
 %
 %%
 [~,id,~] = fileparts(name);
