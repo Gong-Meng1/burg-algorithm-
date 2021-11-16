@@ -24,7 +24,7 @@ if isfield(input, 'event') ...
         
     % evc = unique([{input.event.code}]);
     evt = unique({input.event.type});
-    durationsavaileable = mean([input.event.duration]);
+    durationsavaileable = mean([input.event.duration], 'omitnan');
     if (durationsavaileable < 3)
         ME = MException('Alakazam:Segmentation','Problem in Segmentation: No events with duration. Try Epoch');
         throw(ME);    
@@ -33,5 +33,18 @@ else
     ME = MException('Alakazam:Segmentation','Problem in Segmentation: No events Supplied');
     throw(ME);    
 end
+if strcmp(options, 'Init')
+    options = uiextras.settingsdlg(...
+        'Description', 'Set the parameters for Epoch creation',...
+        'title' , 'Epoch options',...
+        'separator' , 'Events:',...
+        {'Start'; 'Label'}, evt);
+end
+
+slabel = options.Label;
+selection = input.event(strcmpi({input.event.type}, slabel))
+
+
+AreaEventLabel = strcat(evlab(evdur > 0) + " - " + evtypes(evdur > 0));
 
 end

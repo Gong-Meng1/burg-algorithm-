@@ -118,15 +118,21 @@ if ~strcmp(parser.Results.ShowEvents, 'off')
         
         evlati = [SIG.EEG.event.latency];
         evdur = [SIG.EEG.event.duration];
+        
         evlati = evlati(evdur > 0); % only events with longer: "Labels" or "Areas".
+        if isfield(SIG.EEG.event, 'type') 
+            evtypes = {SIG.EEG.event.type};
+        end
         
-        evtypes = {SIG.EEG.event.type};
-        evlab   = {SIG.EEG.event.code};
-        
+        evlab = {'-'};
+        if isfield(SIG.EEG.event, 'code')
+            evlab   = {SIG.EEG.event.code};
+        end
+
         SIG.AreaEventLabel = strcat(evlab(evdur > 0) + " - " + evtypes(evdur > 0));
-        SIG.AreaEventTime  = SIG.EEG.times(evlati);
+        SIG.AreaEventTime  = SIG.EEG.times(max(1,floor(evlati)));
         SIG.AreaEventDur   = evdur(evdur > 0) / SIG.EEG.srate;
-                
+        
         SIG.ShowEvents = 'on';
     else
         SIG.ShowEvents = 'off';

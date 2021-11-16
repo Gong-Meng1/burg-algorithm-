@@ -29,36 +29,39 @@ if exist(matfilename, 'file') == 2
     end
 else
     % no matfile: create the matfile
-    % addpath(fullfile(fileparts(mfilename('fullpath'))));
+    mkdir ([tempdir 'tmpXDF'])
+    data = dataSourceXDF( xdffilename , [tempdir 'tmpXDF']);
+    nchan = size(data);
+    EEG = data.export2eeglab(1:nchan(2), [], [], false);
+    %rmdir([tempdir 'tmpXDF'], 's')
 
-    stream = Tools.load_xdf(xdffilename);
-    stream  = stream{1};
-    EEG = Tools.eeg_emptyset;
-    EEG.data = stream.time_series;
-    [EEG.nbchan,EEG.pnts,EEG.trials] = size(EEG.data);
-    [EEG.filepath,fname,fext] = fileparts(xdffilename); EEG.filename = [fname fext];
-    if isfinite(stream.info.effective_srate) && stream.info.effective_srate>0
-        EEG.srate = round(stream.info.effective_srate);
-    else
-        EEG.srate = round(str2num(stream.info.nominal_srate)); %#ok<ST2NM>
-    end
-    EEG.xmin = 0;
-    EEG.xmax = (EEG.pnts-1)/EEG.srate;
-    EEG.etc.desc = stream.info.desc;
-    EEG.etc.info = rmfield(stream.info,'desc');
-
-    
-    %     EEG=Tools.pop_biosig(bdffilename);
-    %     Tools.pop_writebva(EEG, [bdffilename(1:end-4) 'bva']);
-    EEG.chanlocs(1).theta = 0;
-    EEG.chanlocs(1).labels = 'ECG';
-    EEG.chanlocs = EEG.chanlocs';
+%     
+%     stream = Tools.load_xdf(xdffilename);
+%     stream  = stream{1};
+%     EEG = Tools.eeg_emptyset;
+%     EEG.data = stream.time_series;
+     [EEG.nbchan,EEG.pnts,EEG.trials] = size(EEG.data);
+     [EEG.filepath,fname,fext] = fileparts(xdffilename); EEG.filename = [fname fext];
+     EEG.times = EEG.times/1000;
+%     if isfinite(stream.info.effective_srate) && stream.info.effective_srate>0
+%         EEG.srate = round(stream.info.effective_srate);
+%     else
+%         EEG.srate = round(str2num(stream.info.nominal_srate)); %#ok<ST2NM>
+%     end
+%     EEG.xmin = 0;
+%     EEG.xmax = (EEG.pnts-1)/EEG.srate;
+%     EEG.etc.desc = stream.info.desc;
+%     EEG.etc.info = rmfield(stream.info,'desc');
+% 
+%     EEG.chanlocs(1).theta = 0;
+%     EEG.chanlocs(1).labels = 'ECG';
+%     EEG.chanlocs = EEG.chanlocs';
 
     EEG=Tools.eeg_checkset(EEG);
     EEG.DataType = 'TIMEDOMAIN';
     EEG.DataFormat = 'CONTINUOUS';
     EEG.id = id;
-    EEG.times = stream.time_stamps - stream.time_stamps(1);
+%    EEG.times = stream.time_stamps - stream.time_stamps(1);
     EEG.File = matfilename;
     EEG.lss = Tools.EEG2labeledSignalSet(this.EEG);
     save(matfilename, 'EEG', '-v7.3');

@@ -17,14 +17,22 @@ rawfilename = strcat(WS.RawDirectory, name);
 
     load(rawfilename, 'EEG');
     EEG.File = matfilename;
+    if (~isfield(EEG, 'DataFormat'))
+        EEG.DataFormat = 'CONTINUOUS';
+    end
+    if (~isfield(EEG, 'DataType'))
+        EEG.DataType = 'TIMEDOMAIN';
+    end
 
     save(matfilename, 'EEG');
   
-        % else read the rawfile
+    % else read the rawfile
     a=load(strcat(WS.CacheDirectory, id, '.mat'), 'EEG');
+
     this.EEG = a.EEG;
     this.EEG.id = id;
     this.EEG.File = matfilename;
+
 
 %% Adds the loaded 'EEG' to the tree.
 tn = uiextras.jTree.TreeNode('Name',id, 'UserData', matfilename, 'Parent', this.Tree.Root);

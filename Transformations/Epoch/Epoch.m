@@ -57,10 +57,10 @@ selev = strcmpi({events.type}, options.StartLabel);
 
 for i = 1:length(selev)
     if selev(i)
-        ev = EEG.event(i);
-        ev.latency = max(ev.latency + presamp,1);
-        ev.duration = (-presamp)+postsamp;
-        EEG.event(i) = ev;
+        EEG.event(i).latency = max(EEG.event(i).latency + presamp,1);
+        EEG.event(i).duration = (-presamp)+postsamp;
+        EEG.event(i).unit = 'samples';
+        EEG.event(i).preevent = presamp;
     end
 end
 

@@ -120,7 +120,7 @@ classdef Alakazam < handle
             catch ME
                 set(f,'Pointer','arrow');
                 warndlg(ME.message, 'Error in transformation');
-                %throw (ME)
+                throw (ME)
                 %;
             end
         end
@@ -156,7 +156,7 @@ classdef Alakazam < handle
                 'DockControls','on', ...
                 'Visible','off' ...
                 );
-            
+
             %% EPOCHED DATA PLOT
             if strcmp(this.Workspace.EEG.DataFormat, 'EPOCHED')
                 tempEEG = this.Workspace.EEG;
