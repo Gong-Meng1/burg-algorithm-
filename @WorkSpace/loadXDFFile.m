@@ -33,6 +33,7 @@ else
     data = dataSourceXDF( xdffilename , [tempdir 'tmpXDF']);
     nchan = size(data);
     EEG = data.export2eeglab(1:nchan(2), [], [], false);
+    
     %rmdir([tempdir 'tmpXDF'], 's')
 
 %     
