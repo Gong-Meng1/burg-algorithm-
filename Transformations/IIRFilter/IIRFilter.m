@@ -4,7 +4,9 @@ function [output, options] = IIRFilter(varargin)
 %
 %
 %%
+
 GUICALL = ['IIRFilterApp(varargin{1});'];
+varargin{1}.srate = round(varargin{1}.srate);
 if (nargin == 1)
     options = TransTools.CheckOptions(GUICALL,'Alakazam:IIRFilter', varargin{1});
 else
@@ -50,7 +52,7 @@ if strcmp(options.useTable, 'Off')
             for chan = 1:nchan
                 TransTools.progressbar(chan/nchan);
                 drawnow;
-                output.data(chan,:,seg)=Tools.filtfilt(b,a,double(output.data(chan,:,seg)));
+                output.data(chan,:,seg)=Tools.filtfilt(b,a,output.data(chan,:,seg));
             end
         end
     end
@@ -71,13 +73,13 @@ else % Individual channel Setting:
                 [b,a] = TransTools.CreateFilter('low', input.srate, options.TableData.LCFreqValues(chan), str2double(char(options.TableData.LCSlopeValues(chan))));
                 TransTools.progressbar(chan/nchan);
                 drawnow;
-                output.data(chan,:,seg)=Tools.filtfilt(b,a,double(output.data(chan,:,seg)));
+                output.data(chan,:,seg)=Tools.filtfilt(b,a,output.data(chan,:,seg));
             end
             if options.TableData.HCSelected(chan)
                 [b,a] = TransTools.CreateFilter('high', input.srate, options.TableData.HCFreqValues(chan), str2double(char(options.TableData.HCSlopeValues(chan))));
                 TransTools.progressbar(chan/nchan);
                 drawnow;
-                output.data(chan,:,seg)=Tools.filtfilt(b,a,double(output.data(chan,:,seg)));
+                output.data(chan,:,seg)=Tools.filtfilt(b,a,output.data(chan,:,seg));
             end
         end
     end

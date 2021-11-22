@@ -9,12 +9,13 @@ par = [];
 ecgData = EEGstruct.data;
 if (size(EEGstruct.data,1) >1 )
     try
-        ecgid = strcmpi({EEGstruct.chanlocs.labels},'ECG');
+        %ecgid = strcmpi({EEGstruct.chanlocs.labels},'ECG');
+        ecgid = contains(upper({EEGstruct.chanlocs.labels}),{'POLAR', 'ECG'});
     catch ME %#ok<NASGU>
         return
     end
     if sum(ecgid)>0
-        ecgData = ecgData(ecgid,:);
+        ecgData = ecgData(ecgid(1),:);
     else
         return
     end
@@ -61,7 +62,9 @@ end
 
 %% Because the eventtimes for the r-top are interpolated they do not fit 
 %% the event structure. We keep them separated
-
+if size(ecgTimestamps(locs),1) == size(correction,2)
+    ecgTimestamps = ecgTimestamps';
+end
 EEGstruct.IBIevent.RTopTime = ecgTimestamps(locs) + correction;
 EEGstruct.IBIevent.RTopVal = ecgData(locs);
 EEGstruct.IBIevent.ibis = round(diff(EEGstruct.IBIevent.RTopTime),3);

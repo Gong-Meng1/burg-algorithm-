@@ -1,8 +1,9 @@
 function loadXDFFile(this, WS, name)
 %%
-%
-%
-%
+%   Loads the XDF file into an readeable format for Alakazam
+%   Needs the EEGLAB to be in the path, and needs an installed Mobilab
+%   plugin to be activated.....
+%   
 %
 %%
 [~,id,~] = fileparts(name);
@@ -22,43 +23,21 @@ if exist(matfilename, 'file') == 2
         a=load(strcat(WS.CacheDirectory, id, '.mat'), 'EEG');
         this.EEG = a.EEG;
         this.EEG.id = id;
-        %EEG.chanlocs(1).theta = 0;
-        %EEG.chanlocs(1).labels = 'ECG';
-        %EEG.chanlocs = EEG.chanlocs';
         this.EEG.File = matfilename;
     end
 else
     % no matfile: create the matfile
-    % addpath(fullfile(fileparts(mfilename('fullpath'))));
+    EEG = loadXDF(xdffilename);
+    % DAMN YOU!!
+    %rmdir([tempdir 'tmpXDF'], 's')
 
-    stream = Tools.load_xdf(xdffilename);
-    stream  = stream{1};
-    EEG = Tools.eeg_emptyset;
-    EEG.data = stream.time_series;
     [EEG.nbchan,EEG.pnts,EEG.trials] = size(EEG.data);
     [EEG.filepath,fname,fext] = fileparts(xdffilename); EEG.filename = [fname fext];
-    if isfinite(stream.info.effective_srate) && stream.info.effective_srate>0
-        EEG.srate = round(stream.info.effective_srate);
-    else
-        EEG.srate = round(str2num(stream.info.nominal_srate)); %#ok<ST2NM>
-    end
-    EEG.xmin = 0;
-    EEG.xmax = (EEG.pnts-1)/EEG.srate;
-    EEG.etc.desc = stream.info.desc;
-    EEG.etc.info = rmfield(stream.info,'desc');
-
-    
-    %     EEG=Tools.pop_biosig(bdffilename);
-    %     Tools.pop_writebva(EEG, [bdffilename(1:end-4) 'bva']);
-    EEG.chanlocs(1).theta = 0;
-    EEG.chanlocs(1).labels = 'ECG';
-    EEG.chanlocs = EEG.chanlocs';
-
+    EEG.times = EEG.times/1000;
     EEG=Tools.eeg_checkset(EEG);
     EEG.DataType = 'TIMEDOMAIN';
     EEG.DataFormat = 'CONTINUOUS';
     EEG.id = id;
-    EEG.times = stream.time_stamps - stream.time_stamps(1);
     EEG.File = matfilename;
     EEG.lss = Tools.EEG2labeledSignalSet(this.EEG);
     save(matfilename, 'EEG', '-v7.3');
@@ -71,4 +50,19 @@ setIcon(tn,this.RawFileIcon);
 
 %% Now recursively check for children of this file, and read them if they are there there.
 this.treeTraverse(id, WS.CacheDirectory, tn);
+end
+
+function EEG = loadXDF(filename)
+    mkdir ([tempdir 'tmpXDF'])
+    data = dataSourceXDF( filename , [tempdir 'tmpXDF']);
+    sr=[]; ns=[]; 
+    for i = 1:length(data.item)
+        sr(i) = data.item{i}.samplingRate; %#ok<AGROW> 
+        ns(i) = size(data.item{i},1); %#ok<AGROW> 
+    end
+    ismarker = ((sr==0) & (ns<1000));
+    EEG = data.export2eeglab(find(~ismarker), find(ismarker), [],false);
+    for c = 1:size(EEG.data,1)
+            EEG.data(c,isnan(EEG.data(c,:))) = mean(EEG.data(c,:), 'omitnan');
+    end
 end
