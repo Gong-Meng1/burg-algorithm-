@@ -10,7 +10,7 @@ ecgData = EEGstruct.data;
 if (size(EEGstruct.data,1) >1 )
     try
         %ecgid = strcmpi({EEGstruct.chanlocs.labels},'ECG');
-        ecgid = contains(upper({EEGstruct.chanlocs.labels}),'POLAR');
+        ecgid = contains(upper({EEGstruct.chanlocs.labels}),{'POLAR', 'ECG'});
     catch ME %#ok<NASGU>
         return
     end

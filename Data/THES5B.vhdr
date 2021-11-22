@@ -1,0 +1,25 @@
+Brain Vision Data Exchange Header File Version 1.0
+; Created by Hermes 6.0  [77]  25-JUL-2006  11:37:16
+[Common Infos]
+DataFile=THES5B.bva
+DataFormat=BINARY
+DataOrientation=MULTIPLEXED
+DataType=TIMEDOMAIN
+NumberOfChannels=9
+SamplingInterval=5000
+Averaged=NO
+SegmentDataPoints=0
+SegmentationType=NOTSEGMENTED
+DataPoints=51456
+[Binary Infos]
+BinaryFormat=int_16
+[Channel Infos]
+Ch1=# 01,,0.2441406
+Ch2=# 02,,0.2441406
+Ch3=# 03,,0.2441406
+Ch4=# 04,,0.2441406
+Ch5=# 05,,0.2441406
+Ch6=# 06,,0.2441406
+Ch7=# 07,,0.2441406
+Ch8=# 08,,0.2441406
+Ch9=# 09,,0.2441406

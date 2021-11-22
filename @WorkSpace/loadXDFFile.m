@@ -23,50 +23,21 @@ if exist(matfilename, 'file') == 2
         a=load(strcat(WS.CacheDirectory, id, '.mat'), 'EEG');
         this.EEG = a.EEG;
         this.EEG.id = id;
-        %EEG.chanlocs(1).theta = 0;
-        %EEG.chanlocs(1).labels = 'ECG';
-        %EEG.chanlocs = EEG.chanlocs';
         this.EEG.File = matfilename;
     end
 else
     % no matfile: create the matfile
     EEG = loadXDF(xdffilename);
-    
-    %mkdir ([tempdir 'tmpXDF'])
-    %data = dataSourceXDF( xdffilename , [tempdir 'tmpXDF']);
-    %nchan = size(data);
-    %EEG = data.export2eeglab(1:nchan(2), [], [], false);
-
     % DAMN YOU!!
     %rmdir([tempdir 'tmpXDF'], 's')
 
-%     
-%     stream = Tools.load_xdf(xdffilename);
-%     stream  = stream{1};
-%     EEG = Tools.eeg_emptyset;
-%     EEG.data = stream.time_series;
-     [EEG.nbchan,EEG.pnts,EEG.trials] = size(EEG.data);
-     [EEG.filepath,fname,fext] = fileparts(xdffilename); EEG.filename = [fname fext];
-     EEG.times = EEG.times/1000;
-%     if isfinite(stream.info.effective_srate) && stream.info.effective_srate>0
-%         EEG.srate = round(stream.info.effective_srate);
-%     else
-%         EEG.srate = round(str2num(stream.info.nominal_srate)); %#ok<ST2NM>
-%     end
-%     EEG.xmin = 0;
-%     EEG.xmax = (EEG.pnts-1)/EEG.srate;
-%     EEG.etc.desc = stream.info.desc;
-%     EEG.etc.info = rmfield(stream.info,'desc');
-% 
-%     EEG.chanlocs(1).theta = 0;
-%     EEG.chanlocs(1).labels = 'ECG';
-%     EEG.chanlocs = EEG.chanlocs';
-
+    [EEG.nbchan,EEG.pnts,EEG.trials] = size(EEG.data);
+    [EEG.filepath,fname,fext] = fileparts(xdffilename); EEG.filename = [fname fext];
+    EEG.times = EEG.times/1000;
     EEG=Tools.eeg_checkset(EEG);
     EEG.DataType = 'TIMEDOMAIN';
     EEG.DataFormat = 'CONTINUOUS';
     EEG.id = id;
-%    EEG.times = stream.time_stamps - stream.time_stamps(1);
     EEG.File = matfilename;
     EEG.lss = Tools.EEG2labeledSignalSet(this.EEG);
     save(matfilename, 'EEG', '-v7.3');
@@ -82,26 +53,16 @@ this.treeTraverse(id, WS.CacheDirectory, tn);
 end
 
 function EEG = loadXDF(filename)
-    streams = Tools.load_xdf(filename);
-    isvalid = [];
-    sr=[]; ns=[]; %timestart=[];timeend=[];
-    for i = 1:length(streams)
-        isvalid(i) = ~isempty(streams{i}.time_series); %#ok<AGROW> 
-    end
-    validstreams = streams();
-    for i = 1:length(validstreams)
-        sr(i) = str2double(validstreams{i}.info.nominal_srate); %#ok<AGROW> 
-        ns(i) = str2double(validstreams{i}.info.sample_count); %#ok<AGROW> 
-        %timestart(i) = min(validstreams{i}.time_stamps);
-        %timeend(i) = max(validstreams{i}.time_stamps);
-    end
-
-    ismarker = ((sr==0) & (ns<1000));
-
     mkdir ([tempdir 'tmpXDF'])
     data = dataSourceXDF( filename , [tempdir 'tmpXDF']);
-    ismarker(~isvalid) = [];
+    sr=[]; ns=[]; 
+    for i = 1:length(data.item)
+        sr(i) = data.item{i}.samplingRate; %#ok<AGROW> 
+        ns(i) = size(data.item{i},1); %#ok<AGROW> 
+    end
+    ismarker = ((sr==0) & (ns<1000));
     EEG = data.export2eeglab(find(~ismarker), find(ismarker), [],false);
-    EEG.pnts = EEG.pnts-1;
-    EEG.data = EEG.data(:, 2:end);
+    for c = 1:size(EEG.data,1)
+            EEG.data(c,isnan(EEG.data(c,:))) = mean(EEG.data(c,:), 'omitnan');
+    end
 end
