@@ -4,7 +4,9 @@ function [output, options] = IIRFilter(varargin)
 %
 %
 %%
+
 GUICALL = ['IIRFilterApp(varargin{1});'];
+varargin{1}.srate = round(varargin{1}.srate);
 if (nargin == 1)
     options = TransTools.CheckOptions(GUICALL,'Alakazam:IIRFilter', varargin{1});
 else
