@@ -4,3 +4,5 @@
 *.Rhistory
 Data/Exports/*
 !Data/*.mat
+@WorkSpace/loadXDFFile.m
+Data.zip

@@ -30,11 +30,14 @@ if exist(matfilename, 'file') == 2
     end
 else
     % no matfile: create the matfile
-    mkdir ([tempdir 'tmpXDF'])
-    data = dataSourceXDF( xdffilename , [tempdir 'tmpXDF']);
-    nchan = size(data);
-    EEG = data.export2eeglab(1:nchan(2), [], [], false);
+    EEG = loadXDF(xdffilename);
     
+    %mkdir ([tempdir 'tmpXDF'])
+    %data = dataSourceXDF( xdffilename , [tempdir 'tmpXDF']);
+    %nchan = size(data);
+    %EEG = data.export2eeglab(1:nchan(2), [], [], false);
+
+    % DAMN YOU!!
     %rmdir([tempdir 'tmpXDF'], 's')
 
 %     
@@ -76,4 +79,29 @@ setIcon(tn,this.RawFileIcon);
 
 %% Now recursively check for children of this file, and read them if they are there there.
 this.treeTraverse(id, WS.CacheDirectory, tn);
+end
+
+function EEG = loadXDF(filename)
+    streams = Tools.load_xdf(filename);
+    isvalid = [];
+    sr=[]; ns=[]; %timestart=[];timeend=[];
+    for i = 1:length(streams)
+        isvalid(i) = ~isempty(streams{i}.time_series); %#ok<AGROW> 
+    end
+    validstreams = streams();
+    for i = 1:length(validstreams)
+        sr(i) = str2double(validstreams{i}.info.nominal_srate); %#ok<AGROW> 
+        ns(i) = str2double(validstreams{i}.info.sample_count); %#ok<AGROW> 
+        %timestart(i) = min(validstreams{i}.time_stamps);
+        %timeend(i) = max(validstreams{i}.time_stamps);
+    end
+
+    ismarker = ((sr==0) & (ns<1000));
+
+    mkdir ([tempdir 'tmpXDF'])
+    data = dataSourceXDF( filename , [tempdir 'tmpXDF']);
+    ismarker(~isvalid) = [];
+    EEG = data.export2eeglab(find(~ismarker), find(ismarker), [],false);
+    EEG.pnts = EEG.pnts-1;
+    EEG.data = EEG.data(:, 2:end);
 end

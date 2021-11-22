@@ -391,7 +391,9 @@ classdef dataSource < handle
             if nargin < 5, updateGui = true;end
             
             I = false(length(dataObjIndex),1);
-            for k=1:length(dataObjIndex), I(k) = obj.item{dataObjIndex(k)}.isMemoryMappingActive;end
+            for k=1:length(dataObjIndex)
+                I(k) = obj.item{dataObjIndex(k)}.isMemoryMappingActive;
+            end
             dataObjIndex = dataObjIndex(I);
             if isempty(dataObjIndex), return;end
             loc = (1:length(dataObjIndex))';
