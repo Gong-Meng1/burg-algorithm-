@@ -27,7 +27,7 @@ EEG = input;
 %% if it was, call the interactive version of the Transformation
 % in this case the pop_select version.
 if (ischar(options) && strcmpi(options, 'Init'))
-    [EEG, options] = pop_getIBI(input);
+    [EEG, options] = pop_getIBI(input, 'Init');
     % in EEGLAB, the second return value is the function call to recreate the
     % transformation.
 else

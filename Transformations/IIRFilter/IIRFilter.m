@@ -1,7 +1,7 @@
 function [output, options] = IIRFilter(varargin)
 %%
 %
-%
+% Filter with interface
 %
 %%
 
