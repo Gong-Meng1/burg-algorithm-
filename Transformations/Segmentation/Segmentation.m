@@ -13,7 +13,7 @@ if (nargin < 1)
     ME = MException('Alakazam:Segmentation','Problem in Segmentation: No Data Supplied');
     throw(ME);
 end
-%% What events are availeable in the dataset:
+%% Are there events availeable in the dataset:
 if isfield(input, 'event') ...
         && isfield(input.event, 'code') ...
         && ~isempty({input.event.code}) ...
@@ -22,29 +22,58 @@ if isfield(input, 'event') ...
         && isfield(input.event, 'duration') ...
         && ~isempty({input.event.duration}) 
         
-    % evc = unique([{input.event.code}]);
-    evt = unique({input.event.type});
-    durationsavaileable = mean([input.event.duration], 'omitnan');
-    if (durationsavaileable < 3)
-        ME = MException('Alakazam:Segmentation','Problem in Segmentation: No events with duration. Try Epoch');
-        throw(ME);    
+    %%select those events that have a uniform length
+    types = {input.event.type};
+    durations = [input.event.duration];
+    %codes = {input.event.code};
+    uniformtypes={};
+    for e = unique(types)
+        evtdurs = unique(durations(strcmp(types,e)));
+        if (length(evtdurs) == 1 && ~isnan(evtdurs) && evtdurs >0)
+            uniformtypes = {uniformtypes, e}; %#ok<AGROW> 
+        end
     end
-else
-    ME = MException('Alakazam:Segmentation','Problem in Segmentation: No events Supplied');
-    throw(ME);    
-end
+    uniformtypes = uniformtypes{2:end};
+
+
+%% simplest option....
 if strcmp(options, 'Init')
     options = uiextras.settingsdlg(...
         'Description', 'Set the parameters for Epoch creation',...
         'title' , 'Epoch options',...
         'separator' , 'Events:',...
-        {'Start'; 'Label'}, evt);
+        {'Label'; 'Label'}, uniformtypes);
+else    
+    if isempty(uniformtypes) 
+        ME = MException('Alakazam:Segmentation','Problem in Segmentation: No events with duration. Try Epoch');
+        throw(ME);    
+    end
+end
+
+if strcmp(options, 'Init')
+    options = uiextras.settingsdlg(...
+        'Description', 'Set the parameters for Epoch creation',...
+        'title' , 'Epoch options',...
+        'separator' , 'Events:',...
+        {'Start'; 'Label'}, uniformtypes);
 end
 
 slabel = options.Label;
-selection = input.event(strcmpi({input.event.type}, slabel))
+selection = input.event(strcmpi({input.event.type}, slabel));
 
+% Now restructure the data and create a 3D dataset with trials in the
+% z-direction... (channels:points:trials)
 
-AreaEventLabel = strcat(evlab(evdur > 0) + " - " + evtypes(evdur > 0));
+EEG.trials = length(selection);
+EEG.pnts   = selection(1).duration; %(as they are confirmed uniform)
+if (isfield(selection(1), 'preevent') && isfield(selection(1), 'postevent'))
+    EEG.times = 1000 * ((-selection(1).preevent:selection(1).postevent-1)/EEG.srate);
+end
 
+data = EEG.data;
+EEG.data = zeros(EEG.nbchan,EEG.pnts, EEG.trials);
+for i = 1: EEG.trials
+    EEG.data(:,:,i) = data(:,selection(i).latency:selection(i).latency+(EEG.pnts-1));
+end
+EEG.DataFormat = 'EPOCHED';
 end

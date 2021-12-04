@@ -46,8 +46,8 @@ if strcmp(options, 'Init')
         {'Remove Originals', 'remove'}, {'yes', 'no'} );
 end
 
-presamp = floor(abs((options.pre/1000.0) * input.srate));
-postsamp = ceil((options.post/1000.0)* input.srate);
+presamp =  abs(options.pre/1000.0)  * EEG.srate; %(IN SAMPLES)
+postsamp = abs(options.post/1000.0) * EEG.srate;
 
 % presamp  = options.pre;
 % postsamp = options.post;
@@ -57,10 +57,11 @@ selev = strcmpi({events.type}, options.StartLabel);
 
 for i = 1:length(selev)
     if selev(i)
-        EEG.event(i).latency = max(EEG.event(i).latency + presamp,1);
-        EEG.event(i).duration = (-presamp)+postsamp;
+        EEG.event(i).latency = floor(max(EEG.event(i).latency - presamp,1)); %% in samples!
+        EEG.event(i).duration = presamp+postsamp; %% in samples!
         EEG.event(i).unit = 'samples';
-        EEG.event(i).preevent = presamp;
+        EEG.event(i).preevent = presamp; %% in samples!
+        EEG.event(i).postevent = postsamp;         %% in samples!
     end
 end
 

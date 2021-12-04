@@ -158,16 +158,17 @@ classdef Alakazam < handle
                 );
 
             %% EPOCHED DATA PLOT
-            if strcmp(this.Workspace.EEG.DataFormat, 'EPOCHED')
+            if strcmpi(this.Workspace.EEG.DataFormat, 'EPOCHED')
                 tempEEG = this.Workspace.EEG;
                 tempEEG.data = squeeze(tempEEG.data(:,:,1));
-                if strcmp(this.Workspace.EEG.DataType, 'TIMEDOMAIN')
+                if strcmpi(this.Workspace.EEG.DataType, 'TIMEDOMAIN')
                     if (this.Workspace.EEG.nbchan > 1)
                         % Multichannel plot epoched
+                        plottype = 'epoched'
                     else
                         % Singlechannel plot epoched
                     end
-                elseif strcmp(this.Workspace.EEG.DataType, 'FREQUENCYDOMAIN')
+                elseif strcmpi(this.Workspace.EEG.DataType, 'FREQUENCYDOMAIN')
                     %% Fourier Plot (Multichannel and singlechannel) epoched
                     Tools.plotFourier(tempEEG, this.Figures(end));
                 end
@@ -175,7 +176,7 @@ classdef Alakazam < handle
                 this.Figures(end).Visible = 'on';
             else
                 %% NOT EPOPCHED: CONTINUOUS
-                if strcmp(this.Workspace.EEG.DataType, 'TIMEDOMAIN')
+                if strcmpi(this.Workspace.EEG.DataType, 'TIMEDOMAIN')
                     if (this.Workspace.EEG.nbchan > 1)
                             % Multichannel plot
                             Tools.plotECG(this.Workspace.EEG.times, this.Workspace.EEG, ...
