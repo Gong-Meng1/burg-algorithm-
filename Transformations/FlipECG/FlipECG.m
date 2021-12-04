@@ -16,7 +16,7 @@ else
 end
 
 if (size(ecgData,1) > 1 )
-    ecgid = startsWith({input.chanlocs.labels},'ECG', 'IgnoreCase', true);
+    ecgid = startsWith({input.chanlocs.labels},{'ECG', 'Polar'}, 'IgnoreCase', true);
     if sum(ecgid)>0
         %% there is an ECG trace: flip it
         ecgData = ecgData(ecgid,:);
