@@ -160,10 +160,12 @@ classdef Alakazam < handle
             %% EPOCHED DATA PLOT
             if strcmpi(this.Workspace.EEG.DataFormat, 'EPOCHED')
                 tempEEG = this.Workspace.EEG;
-                tempEEG.data = squeeze(tempEEG.data(:,:,1));
                 if strcmpi(this.Workspace.EEG.DataType, 'TIMEDOMAIN')
                     if (this.Workspace.EEG.nbchan > 1)
                         % Multichannel plot epoched
+                        % channels:time:trial
+                        Tools.plotEpochedTimeMulti(tempEEG, this.Figures(end)); 
+                        % tempEEG.times, squeeze(tempEEG.data(1,:,:)))
                         plottype = 'epoched'
                     else
                         % Singlechannel plot epoched
