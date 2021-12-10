@@ -32,7 +32,8 @@ end
 % end
 
 EEG = input;
-%EEG.ntrials = 1;
+EEG.ntrials = EEG.trials;
+EEG.trials = 1;
 EEG.data=mean(EEG.data,3);
-EEG.stDev = std(EEG.data,0,3);
+EEG.stDev = std(input.data,0,3);
 
