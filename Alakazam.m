@@ -18,6 +18,10 @@ classdef Alakazam < handle
 
         function this = Alakazam(varargin)
             addpath(pwd);
+            close all
+            if exist('D:/TMP/tmpXDF','dir')
+                rmdir('D:/TMP/tmpXDF', 's');
+            end
             warning('off', 'MATLAB:ui:javacomponent:FunctionToBeRemoved');
             addpath(genpath('Transformations'), 'mlapptools');
 

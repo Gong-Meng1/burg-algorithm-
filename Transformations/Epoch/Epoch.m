@@ -21,10 +21,11 @@ EEG = input;
 
 %% What events are availeable in the dataset:
 if isfield(input, 'event') ...
-        && isfield(input.event, 'code') ...
-        && ~isempty({input.event.code}) ...
         && isfield(input.event, 'type') ...
         && ~isempty({input.event.type})
+        %&& isfield(input.event, 'code') ...
+        %&& ~isempty({input.event.code}) ...
+
     % evc = unique({input.event.code});
     evt = unique({input.event.type});
 end
@@ -46,8 +47,8 @@ if strcmp(options, 'Init')
         {'Remove Originals', 'remove'}, {'yes', 'no'} );
 end
 
-presamp =  abs(options.pre/1000.0)  * EEG.srate; %(IN SAMPLES)
-postsamp = abs(options.post/1000.0) * EEG.srate;
+presamp =  floor(abs(options.pre/1000.0)  * EEG.srate); %(IN SAMPLES)
+postsamp = floor(abs(options.post/1000.0) * EEG.srate);
 
 % presamp  = options.pre;
 % postsamp = options.post;
@@ -57,11 +58,15 @@ selev = strcmpi({events.type}, options.StartLabel);
 
 for i = 1:length(selev)
     if selev(i)
-        EEG.event(i).latency = floor(max(EEG.event(i).latency - presamp,1)); %% in samples!
-        EEG.event(i).duration = presamp+postsamp; %% in samples!
-        EEG.event(i).unit = 'samples';
-        EEG.event(i).preevent = presamp; %% in samples!
-        EEG.event(i).postevent = postsamp;         %% in samples!
+        if (presamp+postsamp+EEG.event(i).latency <= EEG.pnts) && (EEG.event(i).latency - presamp > 1)
+            EEG.event(i).latency = EEG.event(i).latency - presamp; %% in samples!
+            EEG.event(i).duration = presamp+postsamp; %% in samples!
+            EEG.event(i).unit = 'samples';
+            EEG.event(i).preevent = presamp; %% in samples!
+            EEG.event(i).postevent = postsamp;         %% in samples!
+        else
+            EEG.event(i).type = 'ignore';
+        end
     end
 end
-
+a=1;

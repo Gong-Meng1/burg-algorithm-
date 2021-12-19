@@ -109,7 +109,16 @@ end
 if ~strcmp(parser.Results.ShowEvents, 'off')
     if ( isfield(SIG, 'EEG') && isfield(SIG.EEG, 'event') && ~isempty(SIG.EEG.event))
         evlati = [SIG.EEG.event.latency];
-        evdur = [SIG.EEG.event.duration];
+        evdur = ones(1,length(SIG.EEG.event));
+
+        if isfield(SIG.EEG.event, 'duration')
+            empties = cellfun(@isempty, {SIG.EEG.event.duration});
+            nonempties = ~empties;
+
+            evdur(nonempties) = [SIG.EEG.event.duration];
+            evdur(empties) = 1;
+        end
+
         evlati = evlati(evdur < 1); % only events with a duration of 1: events
         evtypes = {SIG.EEG.event.type};
         
@@ -117,14 +126,14 @@ if ~strcmp(parser.Results.ShowEvents, 'off')
         SIG.EventTime = SIG.EEG.times(evlati);
         
         evlati = [SIG.EEG.event.latency];
-        evdur = [SIG.EEG.event.duration];
+        %evdur = [SIG.EEG.event.duration];
         
         evlati = evlati(evdur > 0); % only events with longer: "Labels" or "Areas".
         if isfield(SIG.EEG.event, 'type') 
             evtypes = {SIG.EEG.event.type};
         end
         
-        evlab = {'-'};
+        [evlab{1:length(SIG.EEG.event)}] = deal('-');
         if isfield(SIG.EEG.event, 'code')
             evlab   = {SIG.EEG.event.code};
         end
@@ -136,6 +145,7 @@ if ~strcmp(parser.Results.ShowEvents, 'off')
         SIG.ShowEvents = 'on';
     else
         SIG.ShowEvents = 'off';
+        a=0;
     end
 end
 

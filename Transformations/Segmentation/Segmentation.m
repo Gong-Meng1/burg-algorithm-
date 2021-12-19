@@ -15,47 +15,47 @@ if (nargin < 1)
 end
 %% Are there events availeable in the dataset:
 if isfield(input, 'event') ...
-        && isfield(input.event, 'code') ...
-        && ~isempty({input.event.code}) ...
         && isfield(input.event, 'type') ...
         && ~isempty({input.event.type}) ...
         && isfield(input.event, 'duration') ...
         && ~isempty({input.event.duration}) 
         
+        %&& isfield(input.event, 'code') ...
+        %&& ~isempty({input.event.code}) ...
+
     %%select those events that have a uniform length
     types = {input.event.type};
-    durations = [input.event.duration];
+    durations = zeros(1,length(input.event));
+    empties = cellfun(@isempty, {input.event.duration});
+    nonempties = ~empties;
+    durations(nonempties) = [input.event.duration];
+    durations(empties) = 0;
+    %durations = {input.event.duration};
     %codes = {input.event.code};
     uniformtypes={};
     for e = unique(types)
         evtdurs = unique(durations(strcmp(types,e)));
-        if (length(evtdurs) == 1 && ~isnan(evtdurs) && evtdurs >0)
-            uniformtypes = {uniformtypes, e}; %#ok<AGROW> 
+        if isempty(evtdurs) 
+            uniformtypes{end+1} = char(e); %#ok<AGROW> 
+        elseif  (length(evtdurs) == 1 && ~isnan(evtdurs) && evtdurs > 0)
+            uniformtypes{end+1} = char(e); %#ok<AGROW> 
         end
     end
-    uniformtypes = uniformtypes{2:end};
+    %uniformtypes = uniformtypes{2:end};
 
 
 %% simplest option....
 if strcmp(options, 'Init')
     options = uiextras.settingsdlg(...
-        'Description', 'Set the parameters for Epoch creation',...
-        'title' , 'Epoch options',...
+        'Description', 'Set the parameters for Segmentation creation',...
+        'title' , 'Segmentation options',...
         'separator' , 'Events:',...
-        {'Label'; 'Label'}, uniformtypes);
+        {'Start'; 'Label'}, uniformtypes);
 else    
     if isempty(uniformtypes) 
         ME = MException('Alakazam:Segmentation','Problem in Segmentation: No events with duration. Try Epoch');
         throw(ME);    
     end
-end
-
-if strcmp(options, 'Init')
-    options = uiextras.settingsdlg(...
-        'Description', 'Set the parameters for Epoch creation',...
-        'title' , 'Epoch options',...
-        'separator' , 'Events:',...
-        {'Start'; 'Label'}, uniformtypes);
 end
 
 slabel = options.Label;
@@ -72,7 +72,7 @@ end
 
 data = EEG.data;
 EEG.data = zeros(EEG.nbchan,EEG.pnts, EEG.trials);
-for i = 1: EEG.trials
+for i = 1:EEG.trials
     EEG.data(:,:,i) = data(:,selection(i).latency:selection(i).latency+(EEG.pnts-1));
 end
 EEG.DataFormat = 'EPOCHED';
