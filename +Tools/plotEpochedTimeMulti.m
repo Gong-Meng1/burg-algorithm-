@@ -1,12 +1,13 @@
 function plotEpochedTimeMulti(data, fig)
     % Multichannel plot epoched
     % channels:time:trial
-    set(fig, 'KeyPressFcn',@Key_Pressed_epoched_multi)
+    set(fig, 'KeyPressFcn',@Key_Pressed_epoched_multi);
     data.channel=1;
     data.trial = 1;
     data.labels = {data.chanlocs.labels};
     set(fig, 'UserData', data);
     plot_etm(1); % all trials, one channel
+    axtoolbar('default');    
 end
 
 function plot_etm(mode)
@@ -18,14 +19,14 @@ function plot_etm(mode)
         legendCell = cellstr(num2str(N', 'Trial=%-d'));
         legend(legendCell, ...
             'NumColumns', ceil(size(ud.data,3)/35), ...
-            'Location', 'eastoutside');
+            'Location', 'northeast');
     end
     if mode == 2 % all channels, one trial
         plot(ud.times, squeeze(ud.data(:,:,ud.trial)));
         title("Trial: " + ud.trial)
         legend(ud.labels, 'NumColumns', ...
             ceil(length(ud.labels)/35), ...            
-            'Location', 'eastoutside')
+            'Location', 'northeast')
     end
 end
 
@@ -53,4 +54,13 @@ function Key_Pressed_epoched_multi(~,evnt)
         plot_etm(2);
     end
 
+    if strcmpi(evnt.Key, 'l') % legend toggle
+        hLeg=findobj(gcf,'type','legend');
+        isvis = get(hLeg, 'visible');
+        if (strcmp(isvis, 'off'))
+            set(hLeg,'visible','on')
+        else
+            set(hLeg,'visible','off')
+        end
+    end
 end

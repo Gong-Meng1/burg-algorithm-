@@ -1,11 +1,12 @@
 function plotEpochedTimeMultiAverage(data, fig)
     % Multichannel plot epoched
     % channels:time:trial
-    set(fig, 'KeyPressFcn',@Key_Pressed_epoched_multi_average)
+    set(fig, 'KeyPressFcn',@Key_Pressed_epoched_multi_average);
     data.channel=1;
     data.labels = {data.chanlocs.labels};
     set(fig, 'UserData', data);
     plot_etm(); % averaged over trials, one channel
+    axtoolbar('default');   
 end
 
     function plot_etm()
