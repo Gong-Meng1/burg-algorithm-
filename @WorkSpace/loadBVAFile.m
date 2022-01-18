@@ -47,7 +47,7 @@ else
     EEG.id = id;
     EEG.times = (((1:EEG.pnts)-1)/EEG.srate);
     EEG.File = matfilename;
-    EEG.lss = Tools.EEG2labeledSignalSet(EEG);
+%    EEG.lss = Tools.EEG2labeledSignalSet(EEG);
     save(matfilename, 'EEG', '-v7.3');
     this.EEG=EEG;
 end
