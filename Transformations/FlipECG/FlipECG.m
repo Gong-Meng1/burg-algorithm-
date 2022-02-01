@@ -17,12 +17,15 @@ end
 
 if (size(ecgData,1) > 1 )
     ecgid = startsWith({input.chanlocs.labels},{'ECG', 'Polar'}, 'IgnoreCase', true);
-    if sum(ecgid)>0
-        %% there is an ECG trace: flip it
-        ecgData = ecgData(ecgid,:);
-        necgData = -(ecgData - median(ecgData,2)) + median(ecgData,2);
-        EEG.data(ecgid,:) = necgData;
-    else
-        throw(MException('Alakazam:FlipECG','Problem in FlipECG: No ECG trace Found/Supplied'));    
-    end
+else
+    ecgid=1;
+end
+if sum(ecgid)>0
+    %% there is an ECG trace: flip it
+    ecgData = ecgData(ecgid,:);
+    necgData = -(ecgData - median(ecgData,2)) + median(ecgData,2);
+    EEG.data(ecgid,:) = necgData;
+else
+    throw(MException('Alakazam:FlipECG','Problem in FlipECG: No ECG trace Found/Supplied'));
+end
 end

@@ -84,7 +84,8 @@ classdef dataSource < handle
                     containerObj = mobilabApplication(obj);
                     assignin('base','mobilab',containerObj)
                 end
-            else containerObj = varargin{3};
+            else 
+                containerObj = varargin{3};
             end
             obj.container = containerObj;
             notesFile = [obj.mobiDataDirectory filesep 'notes_' obj.sessionUUID '.txt'];
@@ -398,7 +399,7 @@ classdef dataSource < handle
             if isempty(dataObjIndex), return;end
             loc = (1:length(dataObjIndex))';
             for k=1:length(dataObjIndex)
-                if ~isempty(obj.item{dataObjIndex(k)}.label{1}) && ~isempty(strfind(lower(obj.item{dataObjIndex(k)}.label{1}),'unknown'))
+                if ~isempty(obj.item{dataObjIndex(k)}.label{1}) && contains(lower(obj.item{dataObjIndex(k)}.label{1}),'unknown')
                     loc = circshift(loc,1);
                 end
             end
@@ -818,6 +819,9 @@ try
         ind = unique(streamObj{it}.getTimeIndex(xi));
         x = streamObj{it}.timeStamp(ind)';
         for ch=1:streamObj{it}.numberOfChannels
+            if isa(y, 'int16')
+                y=single(y);
+            end
             yi = interp1(x,y(ind,ch),xi,'linear');
             fwrite(tfid,yi(:),precision);
         end

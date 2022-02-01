@@ -39,7 +39,7 @@ else
     EEG.DataFormat = 'CONTINUOUS';
     EEG.id = id;
     EEG.File = matfilename;
-    EEG.lss = Tools.EEG2labeledSignalSet(this.EEG);
+    % EEG.lss = Tools.EEG2labeledSignalSet(this.EEG);
     save(matfilename, 'EEG', '-v7.3');
     this.EEG=EEG;
 end
