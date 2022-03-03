@@ -13,7 +13,9 @@ end
 options = '15';
 EEG=input;
 lss = Tools.EEG2labeledSignalSet(input);
+
 assignin('base',genvarname(EEG.id), lss);
+
 existingvars = evalin('base', 'who');
 
 signalLabeler;

@@ -122,9 +122,13 @@ if ~strcmp(parser.Results.ShowEvents, 'off')
         evlati = evlati(evdur < 1); % only events with a duration of 1: events
         evtypes = {SIG.EEG.event.type};
         
-        SIG.EventLabel = evtypes(evdur < 1);
-        SIG.EventTime = SIG.EEG.times(evlati);
-        
+        try
+            SIG.EventLabel = evtypes(evdur < 1);
+            SIG.EventTime = SIG.EEG.times(evlati);
+        catch ME
+            SIG.EventLabel = [];
+            SIG.EventTime = []; 
+        end
         evlati = [SIG.EEG.event.latency];
         %evdur = [SIG.EEG.event.duration];
         
