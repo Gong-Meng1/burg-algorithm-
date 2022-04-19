@@ -38,4 +38,6 @@ function open(this,~,~)
         disp(fileList(file).name);
         this.loadCortriumFile(this, fileList(file).name)
     end
+
+    
 end

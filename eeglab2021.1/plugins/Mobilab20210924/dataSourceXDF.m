@@ -150,7 +150,10 @@ classdef dataSourceXDF < dataSource
                         unit = cell(numberOfChannels,1);
                         for it=1:numberOfChannels
                             try
-                                if isfield(streams{stream_count}.info.desc,'channels')
+                                if isfield(streams{stream_count}.info.desc,'Channels')
+                                    streams{stream_count}.info.desc.channels = streams{stream_count}.info.desc.Channels;
+                                end
+                                if isfield(streams{stream_count}.info.desc,'channels') 
                                     if isfield(streams{stream_count}.info.desc.channels,'channel') && numberOfChannels == 1 && isfield(streams{stream_count}.info.desc.channels.channel,'label')
                                         labels{it} = streams{stream_count}.info.desc.channels.channel.label;
                                         if isfield(streams{stream_count}.info.desc.channels.channel,'unit')
@@ -222,7 +225,9 @@ classdef dataSourceXDF < dataSource
                             'parentCommand',parentCommand,'label',[],'event',eventStruct.saveobj,'notes','','samplingRate',samplingRate);
                         metadata.unit = unit;
                         metadata.label = labels;
-                        
+                        if strcmpi(streams{stream_count}.info.type,'Mocap')
+                            streams{stream_count}.info.type = 'EEG';
+                        end
                         % eeg
                         if strcmpi(streams{stream_count}.info.type,'eeg')
                             binFile = [obj.mobiDataDirectory filesep name '_' uuid '_' obj.sessionUUID '.bin'];
@@ -235,6 +240,9 @@ classdef dataSourceXDF < dataSource
                                 end
                             end
                             eegChannels = ismember(lower(channelType),'eeg');
+                            forceChannels = ismember(lower(channelType),'force');
+                            calibrationChannels = ismember(lower(channelType),'calibration');
+                            eegChannels = eegChannels + forceChannels + calibrationChannels;
                             % mmfObj = memmapfile(streams{stream_count}.tmpfile,'Format',{streams{stream_count}.precision...
                             %     [length(eegChannels) length(streams{stream_count}.time_stamps)] 'x'},'Writable',false);
                             if any(~eegChannels)
@@ -388,6 +396,9 @@ classdef dataSourceXDF < dataSource
                                 end
                             else
                                 eventLabel = streams{stream_count}.time_series;
+                            end
+                            if (size(eventLabel,1) > 1)
+                                eventLabel = eventLabel(end,:);
                             end
                             eventObj = eventObj.addEvent(1:length(streams{stream_count}.time_stamps),eventLabel);
                             metadata.binFile = binFile;

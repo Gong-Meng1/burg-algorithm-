@@ -53,14 +53,20 @@ this.treeTraverse(id, WS.CacheDirectory, tn);
 end
 
 function EEG = loadXDF(filename)
-    mkdir ([tempdir 'tmpXDF'])
-    data = dataSourceXDF( filename , [tempdir 'tmpXDF']);
+    td = tempdir;
+    tnf = tempname(td);
+    mkdir (tnf)
+    data = dataSourceXDF( filename , tnf );
     sr=[]; ns=[]; 
     for i = 1:length(data.item)
         sr(i) = data.item{i}.samplingRate; %#ok<AGROW> 
         ns(i) = size(data.item{i},1); %#ok<AGROW> 
+        if strcmp(class(data.item{i}), 'markerStream') %#ok<STISA> 
+            sr(i)=0; %#ok<AGROW> 
+        end
     end
-    ismarker = ((sr==0) & (ns<1000));
+    ismarker = (sr==0);
+
     EEG = data.export2eeglab(find(~ismarker), find(ismarker), [],false);
     for c = 1:size(EEG.data,1)
             EEG.data(c,isnan(EEG.data(c,:))) = mean(EEG.data(c,:), 'omitnan');
