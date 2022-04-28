@@ -242,8 +242,9 @@ classdef Poly5 < TMSi.HiddenHandle
 			header.size_data_block = fread(handle, 1, 'uint16');
 			header.compression_flag = fread(handle, 1, 'uint16');
 			fread(handle, 64, 'uint8');
-
-			if ~strcmp(header.magic_number, sprintf('POLY SAMPLE FILE version 2.04\r\n'))
+            
+            s=sprintf('POLY SAMPLE FILEversion 2.03\r\n');
+			if ~strcmp(header.magic_number(1:30), s)
 				fclose(handle);
 				throw(MException('Poly5:read', 'This is not a Poly5 file.'));
             end

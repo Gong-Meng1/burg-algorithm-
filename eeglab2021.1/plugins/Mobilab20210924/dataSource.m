@@ -92,7 +92,8 @@ classdef dataSource < handle
             if exist(notesFile,'file')
                 txt = textfile2cell(notesFile);
                 obj.notes = mobiAnnotator(obj,txt);
-            else obj.notes = mobiAnnotator(obj);
+            else 
+                obj.notes = mobiAnnotator(obj);
             end
             obj.item = {};
             obj.logicalStructure = 0;
@@ -129,7 +130,7 @@ classdef dataSource < handle
             
             if nargin < 1, error('Not enough input arguments.');end
             try load(header,'-mat','class');
-                constructorHandle = eval(['@' class]); %#ok
+                constructorHandle = eval(['@' class]);
                 cobj = constructorHandle(header);
             catch ME
                 warning(ME.message)
@@ -139,7 +140,8 @@ classdef dataSource < handle
                         case 'segmentedMocap', class = 'mocap';
                         otherwise, class = 'dataStream';
                     end
-                else class = 'dataStream';
+                else
+                    class = 'dataStream';
                 end
                 save(header,'-mat','-append','class');
                 constructorHandle = eval(['@' class]);
@@ -173,7 +175,7 @@ classdef dataSource < handle
             if itemIndex > length(obj.item), return;end
             delList = getIndices4aBranch(obj,itemIndex);
             
-            for it=1:length(delList),
+            for it=1:length(delList)
                 if ~obj.item{delList(it)}.writable, error('MoBILAB:attempt_to_delete_read_only_object','Cannot delete files containing raw data.');end
                 disp(['Removing object: ' obj.item{delList(it)}.name]);
                 bin2delete = obj.item{delList(it)}.binFile;
@@ -259,11 +261,11 @@ classdef dataSource < handle
             %        index:    index of the object whose uuid matched
             
             if nargin < 2, error('Not enough input arguments.');end
-            if ~iscellstr(uuid) && ~ischar(uuid), error('Input must be a string or a cell array of strings.');end
-            if ~iscellstr(uuid), uuid = {uuid};end
+            if ~iscellstr(uuid) && ~ischar(uuid), error('Input must be a string or a cell array of strings.');end %#ok<ISCLSTR> 
+            if ~iscellstr(uuid), uuid = {uuid};end %#ok<ISCLSTR> 
             N = length(uuid);
             itemIndex = zeros(N,1);
-            for it=1:N,
+            for it=1:N
                 ind = find(ismember(obj.hashTable,uuid{it}));
                 if ~isempty(ind), itemIndex(it) = ind;end
             end
@@ -395,6 +397,7 @@ classdef dataSource < handle
             for k=1:length(dataObjIndex)
                 I(k) = obj.item{dataObjIndex(k)}.isMemoryMappingActive;
             end
+
             dataObjIndex = dataObjIndex(I);
             if isempty(dataObjIndex), return;end
             loc = (1:length(dataObjIndex))';
@@ -403,6 +406,7 @@ classdef dataSource < handle
                     loc = circshift(loc,1);
                 end
             end
+            
             dataObjIndex = dataObjIndex(loc);
             eventObjIndex = unique([eventObjIndex(:)' dataObjIndex(:)']);
             
@@ -512,6 +516,7 @@ classdef dataSource < handle
                 assignin('base','EEG',EEG);
                 try
                     evalin('base','eeglab(''redraw'');');
+                catch 
                 end
             end
         end
@@ -560,7 +565,8 @@ classdef dataSource < handle
             if nargin < 2, error('Not enough input arguments.');end
             if nargin < 3
                  obj.container.statusbar(val);
-            else obj.container.statusbar(val,msg);
+            else 
+                obj.container.statusbar(val,msg);
             end
         end
         function val     = isGuiActive(obj), val     = obj.container.isGuiActive;end
@@ -600,7 +606,7 @@ classdef dataSource < handle
                 fprintf('\nitem{%i}:\n',it);
                 obj.item{it}.disp;
             end
-            eval(cmd);
+            eval(cmd); %#ok<EVLCS> 
         end
         %%
         function linkData(obj)
@@ -619,7 +625,8 @@ classdef dataSource < handle
             for it=1:N, obj.hashTable{it} = char(obj.item{it}.uuid);end
             for it=1:N
                 if isempty(obj.item{it}.parent), index = 1;
-                else index = obj.findItem(obj.item{it}.parent.uuid)+1;
+                else 
+                    index = obj.findItem(obj.item{it}.parent.uuid)+1;
                 end
                 obj.logicalStructure(it+1,index) = 1;
                 obj.logicalStructure(index,it+1) = 1;
@@ -632,7 +639,8 @@ classdef dataSource < handle
             gObj = obj.gObj;
             if showTreeFlag
                 figureHandle = obj.container.gui(callback);
-            else figureHandle = [];
+            else 
+                figureHandle = [];
             end
         end
         %%
@@ -836,7 +844,8 @@ try
     streamObj{1}.container.container.initStatusbar(1,Nxi,'Creating EEG.data...');
     for it=1:bufferSize:Nxi
         if it+bufferSize-1 <= Nxi, writeThis = data(it:it+bufferSize-1,:)';
-        else writeThis = data(it:end,:)';
+        else 
+            writeThis = data(it:end,:)';
         end
         fwrite(fid,writeThis(:),precision);
         streamObj{1}.container.container.statusbar(it);
@@ -872,7 +881,10 @@ try
     type(I) = [];
     latency(I) = [];
     hedTag(I) = [];
-    if ~isempty(latency), latency = streamObj{1}.getTimeIndex(latency)-(t0-1);else return;end
+    if ~isempty(latency), latency = streamObj{1}.getTimeIndex(latency)-(t0-1);
+    else 
+        return;
+    end
     
     list = [latency(:) latency(:) latency(:)];
     uType = unique(type);
