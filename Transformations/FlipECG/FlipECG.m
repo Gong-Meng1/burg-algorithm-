@@ -6,7 +6,11 @@ if (nargin < 1)
     throw(MException('Alakazam:FlipECG','Problem in FlipECG: No Data Supplied'));
 end
 
-options = [];
+if (nargin == 1)
+    options = 'Init';
+else
+    options = opts;
+end
 
 if ~isfield(input, 'data')
     throw(MException('Alakazam:FlipECG','Problem in FlipECG: No Correct Data Supplied'));
@@ -16,7 +20,15 @@ else
 end
 
 if (size(ecgData,1) > 1 )
-    ecgid = startsWith({input.chanlocs.labels},{'ECG', 'Polar', 'Unknown'}, 'IgnoreCase', true);
+    cn = unique({input.chanlocs.labels});
+    if strcmp(options, 'Init')
+        options = uiextras.settingsdlg(...
+            'Description', 'Set the parameters for flipECG',...
+            'title' , 'Flip options',...
+            'separator' , 'Parameters:',...
+            {'Use:'; 'channelname'}, cn);
+    end
+    ecgid = strcmpi(options.channelname, {input.chanlocs.labels});
 else
     ecgid=1;
 end

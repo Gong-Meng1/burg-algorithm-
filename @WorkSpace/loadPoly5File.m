@@ -31,21 +31,7 @@ else
     %n = [pathname,'\',filename,extension]
     TMSIDATA = TMSi.Poly5.read([pathname,'\',filename,extension]);
     EEG = toEEGLab(TMSIDATA);
-%     EEG        = Tools.eeg_emptyset();
-% 
-%     EEG.data = TMSIDATA.samples;
-%     % DAMN YOU!!
-%     %rmdir([tempdir 'tmpXDF'], 's')
-% 
-%     [EEG.nbchan,EEG.pnts,EEG.trials] = size(EEG.data);
-%     [EEG.filepath,fname,fext] = fileparts(Poly5filename); EEG.filename = [fname fext];
-%     EEG.srate = TMSIDATA.sample_rate;
-%     EEG.times = (1:EEG.pnts) / EEG.srate;
-%     EEG.xmax = EEG.times(end);
-%     EEG.xmin = 1/EEG.srate;
-%     EEG=Tools.eeg_checkset(EEG);
-%     labs=[TMSIDATA.channels{:}]
-%     EEG.chanlocs.labels = {labs.name};
+
     EEG.DataType = 'TIMEDOMAIN';
     EEG.DataFormat = 'CONTINUOUS';
     EEG.id = id;
@@ -63,48 +49,3 @@ setIcon(tn,this.RawFileIcon);
 this.treeTraverse(id, WS.CacheDirectory, tn);
 end
 
-function EEG = loadXDF(filename)
-    td = tempdir;
-    tnf = tempname(td);
-    mkdir (tnf)
-    data = dataSourceXDF( filename , tnf );
-    sr=[]; ns=[]; 
-    maxsr=-1;
-    polar = [];
-    for i = 1:length(data.item)
-        sr(i) = data.item{i}.samplingRate; %#ok<AGROW> 
-        ns(i) = size(data.item{i},1); %#ok<AGROW> 
-        if strcmp(class(data.item{i}), 'markerStream') %#ok<STISA> 
-            sr(i)=0; %#ok<AGROW> 
-        end
-        if sr(i) > maxsr 
-            maxsr=sr(i);
-            maxsrchan = i;
-        end
-        if sr(i) == 130
-            %polarband
-            polar = [polar i]; %#ok<AGROW> 
-        end
-    end
-
-    ismarker = (sr==0);
-    datachannels = find(~ismarker);
-
-    datachannels = datachannels(datachannels ~= maxsrchan);
-    datachannels = [datachannels maxsrchan];
-
-    EEG = data.export2eeglab(datachannels, find(ismarker), [],false);
-
-    if polar
-        polarchannels = data.export2eeglab(polar, find(ismarker), [],false);
-        for c = 1:size(polarchannels.data,1)
-            polarchannels.data(c,isnan(polarchannels.data(c,:))) = mean(polarchannels.data(c,:), 'omitnan');
-        end
-    end
-
-    for c = 1:size(EEG.data,1)
-            EEG.data(c,isnan(EEG.data(c,:))) = mean(EEG.data(c,:), 'omitnan');
-    end
-
-    EEG.Polarchannels = polarchannels;
-end
