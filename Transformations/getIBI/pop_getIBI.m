@@ -38,20 +38,25 @@ if strcmp(par, 'Init')
         'title' , 'IBI options',...
         'separator' , 'Parameters:',...
         {'Minimal Peak Distance' ;'MinPeakDistance' }, .33, ...
-        {'Use:'; 'channelname'}, cn);
+        {'Use:'; 'channame'}, cn);
 end
 
-ecgid = contains({EEGstruct.chanlocs.labels},par.channelname);
+ecgid = contains({EEGstruct.chanlocs.labels},par.channame);
 ecgData = ecgData(ecgid,:);
 par.MinPeakHeight = median(ecgData)+(2*std(ecgData));
 fSample = EEGstruct.srate;
 
-%% ------------------------------------------------------------------------------------------
-% if no sampleRate is given, calculate it from the samples and the
-% timestamps
+%% if the data originate from a polarband: we have the original sampled 
+%  data to calculate the ibis from. Do this.
 
-%duration = ecgTimestamps(end)-ecgTimestamps(1);
-%par.fSample = round(1.0/(duration / length(ecgTimestamps)));
+if isfield(EEGstruct, 'Polarchannels') 
+    if strcmp(EEGstruct.Polarchannels.chanlocs.labels, par.channame)
+        ecgData = EEGstruct.Polarchannels.data;
+        fSample = EEGstruct.Polarchannels.srate;
+        ecgTimestamps = EEGstruct.Polarchannels.times/1000;
+    end
+end
+
 
 %% convert MinPeakDistance from ms to samples
 MinPeakDistance = par.MinPeakDistance*fSample;
@@ -75,6 +80,7 @@ end
 
 %% Because the eventtimes for the r-top are interpolated they do not fit 
 %% the event structure. We keep them separated
+
 if size(ecgTimestamps(locs),1) == size(correction,2)
     ecgTimestamps = ecgTimestamps';
 end
