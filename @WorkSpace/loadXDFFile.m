@@ -89,11 +89,13 @@ function EEG = loadXDF(filename)
         for c = 1:size(polarchannels.data,1)
             polarchannels.data(c,isnan(polarchannels.data(c,:))) = mean(polarchannels.data(c,:), 'omitnan');
         end
+        
     end
 
     for c = 1:size(EEG.data,1)
             EEG.data(c,isnan(EEG.data(c,:))) = mean(EEG.data(c,:), 'omitnan');
     end
-
-    EEG.Polarchannels = polarchannels;
+    if polar
+        EEG.Polarchannels = polarchannels;
+    end
 end
